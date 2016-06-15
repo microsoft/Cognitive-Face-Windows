@@ -1,4 +1,31 @@
-Microsoft Cognitive Services Face Windows client library
+Microsoft Cognitive Services Face client SDK and samples
+========================================
+
+This repo contains the client libraries that demonstrate Microsoft’s cloud-based
+face algorithms to detect and recognize human faces in images. See the tech in
+action on [our demo page](<http://www.microsoft.com/cognitive-services/en-us/face-api>) or
+learn more about the API with [our
+documentation](<http://www.microsoft.com/cognitive-services/en-us/face-api/documentation/overview>).
+
+### Face detection with attribute extraction
+
+Detect human faces in image with face rectangles and face attributes including
+face landmarks, pose, gender and age
+
+### Face verification
+
+Check if two faces belonging to same person or not, with confidence score
+
+### Face Grouping
+
+Organize many faces into face groups based on their visual similarity
+
+### Face identification
+
+Search which specific person entity a query face belongs to, from user-provided
+person-face data
+
+Client library
 ==================
 
 The Face API client library is a thin C\# client wrapper for Microsoft Cognitive Services (formerly Project Oxford) Face
