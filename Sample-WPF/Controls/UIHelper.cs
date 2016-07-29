@@ -36,6 +36,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace Microsoft.ProjectOxford.Face.Controls
@@ -159,5 +161,73 @@ namespace Microsoft.ProjectOxford.Face.Controls
         }
 
         #endregion Methods
+    }
+
+    public static class ControlHelper
+    {
+        public static readonly DependencyProperty PassMouseWheelToParentProperty =
+         DependencyProperty.RegisterAttached("PassMouseWheelToParent", typeof(bool), typeof(UIElement),
+         new PropertyMetadata((bool)false));
+
+        public static void SetPassMouseWheelToParent(UIElement obj, bool value)
+        {
+            obj.SetValue(PassMouseWheelToParentProperty, value);
+            if (value)
+            {
+                obj.PreviewMouseWheel += Obj_PreviewMouseWheel;
+            }
+            else
+            {
+                obj.PreviewMouseWheel -= Obj_PreviewMouseWheel;
+            }
+        }
+
+        public static bool GetPassMouseWheelToParent(UIElement obj)
+        {
+            return (bool)obj.GetValue(PassMouseWheelToParentProperty);
+        }
+
+        private static void Obj_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            if (!e.Handled)
+            {
+                e.Handled = true;
+                var eventArg = new System.Windows.Input.MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                eventArg.Source = sender;
+                var parent = FindVisualParent<UIElement>((DependencyObject)sender);
+                if (parent != null)
+                    parent.RaiseEvent(eventArg);
+            }
+        }
+
+        /// <summary>
+        /// Finds a parent of a given item on the visual tree.
+        /// </summary>
+        /// <typeparam name="T">The type of the queried item.</typeparam>
+        /// <param name="child">A direct or indirect child of the queried item.</param>
+        /// <returns>The first parent item that matches the submitted type parameter. 
+        /// If not matching item can be found, a null reference is being returned.</returns>
+        public static T FindVisualParent<T>(DependencyObject child)
+          where T : DependencyObject
+        {
+            // get parent item
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+
+            // we’ve reached the end of the tree
+            if (parentObject == null) return null;
+
+            // check if the parent matches the type we’re looking for
+            T parent = parentObject as T;
+            if (parent != null)
+            {
+                return parent;
+            }
+            else
+            {
+                // use recursion to proceed with next level
+                return FindVisualParent<T>(parentObject);
+            }
+        }
     }
 }
