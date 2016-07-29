@@ -86,9 +86,8 @@
         </Grid>
         <Button Grid.Column="0" Grid.Row="1" Content="Choose Image" Width="300" Height="35" Background="#2196f3" Foreground="White" BorderBrush="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0, 0, 0, 0" Click="ImagePicker_Click"/>
         <TextBlock Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding DetectedResultsInText, ElementName=FaceDetectionPane}" />
-        <ScrollViewer Grid.Row="2" Grid.Column="2" Width="314" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <ListView ItemsSource="{Binding DetectedFaces, ElementName=FaceDetectionPane}" Margin="0">
-                <ListView.Style>
+        <ListView Grid.Row="2" Grid.Column="2" ItemsSource="{Binding DetectedFaces, ElementName=FaceDetectionPane}" Margin="0" ScrollViewer.VerticalScrollBarVisibility="Auto" Height="340">
+            <ListView.Style>
                     <Style TargetType="ListView">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=Items.Count}" Value="0">
@@ -173,6 +172,5 @@
                     </Style>
                 </ListBox.ItemContainerStyle>
             </ListView>
-        </ScrollViewer>
     </Grid>
 </Page>

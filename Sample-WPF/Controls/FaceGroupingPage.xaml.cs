@@ -32,6 +32,7 @@
 //
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -40,7 +41,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
+using System.Windows.Input;
+using System.Windows.Media;
 using ClientContract = Microsoft.ProjectOxford.Face.Contract;
 
 namespace Microsoft.ProjectOxford.Face.Controls
@@ -67,6 +69,11 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// </summary>
         private ObservableCollection<GroupingResult> _groupedFaces = new ObservableCollection<GroupingResult>();
 
+        /// <summary>
+        /// max concurrent process number for client query.
+        /// </summary>
+        private int _maxConcurrentProcesses;
+
         #endregion Fields
 
         #region Constructors
@@ -77,6 +84,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
         public FaceGroupingPage()
         {
             InitializeComponent();
+            _maxConcurrentProcesses = 4;
         }
 
         #endregion Constructors
@@ -157,7 +165,14 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 var faceServiceClient = new FaceServiceClient(subscriptionKey);
 
                 MainWindow.Log("Request: Preparing faces for grouping, detecting faces in chosen folder.");
-                foreach (var img in Directory.EnumerateFiles(dlg.SelectedPath, "*.jpg", SearchOption.AllDirectories))
+                
+                var imageList =
+                    new ConcurrentBag<string>(
+                        Directory.EnumerateFiles(dlg.SelectedPath, "*.*", SearchOption.AllDirectories)
+                            .Where(s => s.EndsWith(".jpg") || s.EndsWith(".png") || s.EndsWith(".bmp") || s.EndsWith(".gif")));
+
+                string img;
+                while (imageList.TryTake(out img))
                 {
                     tasks.Add(Task.Factory.StartNew(
                         async (obj) =>
@@ -172,8 +187,14 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                     var faces = await faceServiceClient.DetectAsync(fStream);
                                     return new Tuple<string, ClientContract.Face[]>(imgPath, faces);
                                 }
-                                catch (FaceAPIException)
+                                catch (FaceAPIException ex)
                                 {
+                                    // if operation conflict, retry.
+                                    if (ex.ErrorCode.Equals("ConcurrentOperationConflict"))
+                                    {
+                                        imageList.Add(imgPath);
+                                        return null;
+                                    }
                                     // Here we simply ignore all detection failure in this sample
                                     // You may handle these exceptions by check the Error.Error.Code and Error.Message property for ClientException object
                                     return new Tuple<string, ClientContract.Face[]>(imgPath, null);
@@ -183,8 +204,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         img).Unwrap().ContinueWith((detectTask) =>
                         {
                             // Update detected faces on UI
-                            var res = detectTask.Result;
-                            if (res.Item2 == null)
+                            var res = detectTask?.Result;
+                            if (res?.Item2 == null)
                             {
                                 return;
                             }
@@ -210,14 +231,18 @@ namespace Microsoft.ProjectOxford.Face.Controls
                             break;
                         }
                     }
+                    if (tasks.Count >= _maxConcurrentProcesses || imageList.IsEmpty)
+                    {
+                        await Task.WhenAll(tasks);
+                        tasks.Clear();
+                    }
                 }
-
-                await Task.WhenAll(tasks);
+                
                 MainWindow.Log("Response: Success. Total {0} faces are detected.", Faces.Count);
 
                 try
                 {
-                    MainWindow.Log("Request: Grouping {0} faces.", Faces.Count);
+                   MainWindow.Log("Request: Grouping {0} faces.", Faces.Count);
 
                     // Call grouping, the grouping result is a group collection, each group contains similar faces
                     var groupRes = await faceServiceClient.GroupAsync(Faces.Select(f => Guid.Parse(f.FaceId)).ToArray());
@@ -264,6 +289,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
                 }
             }
+            GC.Collect();
         }
 
         #endregion Methods
