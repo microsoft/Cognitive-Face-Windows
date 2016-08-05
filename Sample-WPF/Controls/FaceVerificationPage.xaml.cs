@@ -578,7 +578,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                         imageList.Add(imgPath);
                                         return null;
                                     }
-                                    else if (ex.ErrorMessage.Contains("There are more than 1 face in the image."))
+                                    else if (ex.ErrorMessage.Contains("more than 1 face in the image."))
                                     {
                                         Interlocked.Increment(ref invalidImageCount);
                                     }
