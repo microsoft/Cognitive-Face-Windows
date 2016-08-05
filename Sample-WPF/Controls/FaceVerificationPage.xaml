@@ -39,8 +39,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:uc="clr-namespace:Microsoft.ProjectOxford.Face.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="720" d:DesignWidth="710" MinHeight="720" Width="710" FontSize="14" x:Name="FaceVerificationPane">
-    <Grid>
+             d:DesignHeight="720" d:DesignWidth="710" MinHeight="360" FontSize="14" x:Name="FaceVerificationPane">
+    <ScrollViewer >
+    <Grid HorizontalAlignment="Center">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
             <ColumnDefinition Width="110" />
@@ -58,7 +59,7 @@
             <RowDefinition Height="52" />
             <RowDefinition Height="58" />
             <RowDefinition Height="22" />
-            <RowDefinition MinHeight="168" />
+            <RowDefinition Height="168" />
         </Grid.RowDefinitions>
         <RichTextBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Left" BorderThickness="0">
             <FlowDocument>
@@ -226,4 +227,5 @@
         <TextBlock Grid.Column="1" Grid.Row="10" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Results:" TextWrapping="Wrap"/>
         <TextBlock Grid.Column="1" Grid.Row="11" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding PersonVerifyResult, ElementName=FaceVerificationPane}" TextWrapping="Wrap"/>
     </Grid>
+    </ScrollViewer >
 </Page>
