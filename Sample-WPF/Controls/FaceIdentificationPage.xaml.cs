@@ -32,7 +32,6 @@
 //
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -40,7 +39,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -81,11 +79,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// </summary>
         private string _selectedFile;
 
-        /// <summary>
-        /// max concurrent process number for client query.
-        /// </summary>
-        private int _maxConcurrentProcesses;
-
         #endregion Fields
 
         #region Constructors
@@ -96,7 +89,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
         public FaceIdentificationPage()
         {
             InitializeComponent();
-            _maxConcurrentProcesses = 4;
         }
 
         #endregion Constructors
@@ -215,7 +207,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             // Test whether the group already exists
             try
             {
-                MainWindow.Log("Request: Group {0} will be used to build a person database. Checking whether the group exists.", GroupName);
+                MainWindow.Log("Request: Group {0} will be used for build person database. Checking whether group exists.", GroupName);
 
                 await faceServiceClient.GetPersonGroupAsync(GroupName);
                 groupExists = true;
@@ -230,13 +222,13 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 }
                 else
                 {
-                    MainWindow.Log("Response: Group {0} did not exist previously.", GroupName);
+                    MainWindow.Log("Response: Group {0} does not exist before.", GroupName);
                 }
             }
 
             if (groupExists)
             {
-                var cleanGroup = System.Windows.MessageBox.Show(string.Format("Requires a clean up for group \"{0}\" before setting up a new person database. Click OK to proceed, group \"{0}\" will be cleared.", GroupName), "Warning", MessageBoxButton.OKCancel);
+                var cleanGroup = System.Windows.MessageBox.Show(string.Format("Requires a clean up for group \"{0}\" before setup new person database. Click OK to proceed, group \"{0}\" will be fully cleaned up.", GroupName), "Warning", MessageBoxButton.OKCancel);
                 if (cleanGroup == MessageBoxResult.OK)
                 {
                     await faceServiceClient.DeletePersonGroupAsync(GroupName);
@@ -262,7 +254,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 Persons.Clear();
                 TargetFaces.Clear();
                 SelectedFile = null;
-                IdentifyButton.IsEnabled = false;
 
                 // Call create person group REST API
                 // Create person group API call will failed if group with the same name already exists
@@ -284,7 +275,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 MainWindow.Log("Request: Preparing faces for identification, detecting faces in chosen folder.");
 
                 // Enumerate top level directories, each directory contains one person's images
-                int invalidImageCount = 0;
                 foreach (var dir in System.IO.Directory.EnumerateDirectories(dlg.SelectedPath))
                 {
                     var tasks = new List<Task>();
@@ -300,14 +290,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     p.PersonId = (await faceServiceClient.CreatePersonAsync(GroupName, p.PersonName)).PersonId.ToString();
                     MainWindow.Log("Response: Success. Person \"{0}\" (PersonID:{1}) created", p.PersonName, p.PersonId);
 
-                    string img;
                     // Enumerate images under the person folder, call detection
-                    var imageList =
-                    new ConcurrentBag<string>(
-                        Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
-                            .Where(s => s.EndsWith(".jpg") || s.EndsWith(".png") || s.EndsWith(".bmp") || s.EndsWith(".gif")));
-                    
-                    while (imageList.TryTake(out img))
+                    foreach (var img in System.IO.Directory.EnumerateFiles(dir, "*.jpg", System.IO.SearchOption.AllDirectories))
                     {
                         tasks.Add(Task.Factory.StartNew(
                             async (obj) =>
@@ -322,24 +306,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                         var persistFace = await faceServiceClient.AddPersonFaceAsync(GroupName, Guid.Parse(p.PersonId), fStream, imgPath);
                                         return new Tuple<string, ClientContract.AddPersistedFaceResult>(imgPath, persistFace);
                                     }
-                                    catch (FaceAPIException ex)
+                                    catch (FaceAPIException)
                                     {
-                                        // if operation conflict, retry.
-                                        if (ex.ErrorCode.Equals("ConcurrentOperationConflict"))
-                                        {
-                                            imageList.Add(imgPath);
-                                            return null;
-                                        }
-                                        // if operation cause rate limit exceed, retry.
-                                        else if (ex.ErrorCode.Equals("RateLimitExceeded"))
-                                        {
-                                            imageList.Add(imgPath);
-                                            return null;
-                                        }
-                                        else if (ex.ErrorMessage.Contains("There are more than 1 face in the image."))
-                                        {
-                                            Interlocked.Increment(ref invalidImageCount);
-                                        }
                                         // Here we simply ignore all detection failure in this sample
                                         // You may handle these exceptions by check the Error.Error.Code and Error.Message property for ClientException object
                                         return new Tuple<string, ClientContract.AddPersistedFaceResult>(imgPath, null);
@@ -349,7 +317,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                             img).Unwrap().ContinueWith((detectTask) =>
                             {
                                 // Update detected faces for rendering
-                                var detectionResult = detectTask?.Result;
+                                var detectionResult = detectTask.Result;
                                 if (detectionResult == null || detectionResult.Item2 == null)
                                 {
                                     return;
@@ -373,20 +341,13 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                 break;
                             }
                         }
-
-                        if (tasks.Count >= _maxConcurrentProcesses || imageList.IsEmpty)
-                        {
-                            await Task.WhenAll(tasks);
-                            tasks.Clear();
-                        }
                     }
 
                     Persons.Add(p);
+
+                    await Task.WhenAll(tasks);
                 }
-                if (invalidImageCount > 0)
-                {
-                    MainWindow.Log("Warning: more or less than one face is detected in {0} images, can not add to face list.", invalidImageCount);
-                }
+
                 MainWindow.Log("Response: Success. Total {0} faces are detected.", Persons.Sum(p => p.Faces.Count));
 
                 try
@@ -406,14 +367,12 @@ namespace Microsoft.ProjectOxford.Face.Controls
                             break;
                         }
                     }
-                    IdentifyButton.IsEnabled = true;
                 }
                 catch (FaceAPIException ex)
                 {
                     MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
                 }
             }
-            GC.Collect();
         }
 
         /// <summary>
@@ -426,7 +385,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             // Show file picker
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.DefaultExt = ".jpg";
-            dlg.Filter = "Image files(*.jpg, *.png, *.bmp, *.gif) | *.jpg; *.png; *.bmp; *.gif";
+            dlg.Filter = "Image files(*.jpg) | *.jpg";
             var result = dlg.ShowDialog();
 
             if (result.HasValue && result.Value)
@@ -492,7 +451,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     }
                 }
             }
-            GC.Collect();
         }
 
         #endregion Methods

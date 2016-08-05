@@ -54,11 +54,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
         private string _age;
 
         /// <summary>
-        /// confidence value of this face to a target face
-        /// </summary>
-        private double _confidence;
-
-        /// <summary>
         /// Person name
         /// </summary>
         private string _personName;
@@ -142,23 +137,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
             {
                 _age = value;
                 OnPropertyChanged<string>();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets confidence value
-        /// </summary>
-        public double Confidence
-        {
-            get
-            {
-                return _confidence;
-            }
-
-            set
-            {
-                _confidence = value;
-                OnPropertyChanged<double>();
             }
         }
 

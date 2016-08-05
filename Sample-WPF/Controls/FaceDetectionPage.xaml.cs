@@ -31,7 +31,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -39,8 +38,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace Microsoft.ProjectOxford.Face.Controls
 {
@@ -204,7 +201,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             // Show file picker dialog
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.DefaultExt = ".jpg";
-            dlg.Filter = "Image files (*.jpg, *.png, *bmp, *.gif) | *.jpg; *.png; *.bmp; *.gif";
+            dlg.Filter = "Image files(*.jpg) | *.jpg";
             var result = dlg.ShowDialog();
 
             if (result.HasValue && result.Value)
@@ -261,10 +258,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     catch (FaceAPIException ex)
                     {
                         MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
-                        GC.Collect();
                         return;
                     }
-                    GC.Collect();
                 }
             }
         }
