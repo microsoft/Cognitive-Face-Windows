@@ -51,7 +51,9 @@
             <RowDefinition Height="45" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Left" Text="{Binding FaceIdentificationDescription}" TextWrapping="Wrap"></TextBlock>
+        <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+        <TextBlock  HorizontalAlignment="Left" Text="{Binding FaceIdentificationDescription}" TextWrapping="Wrap"></TextBlock>
+        </ScrollViewer>
         <ListView Grid.Column="0" Grid.Row="2" Height="300" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Transparent" ItemsSource="{Binding Persons, ElementName=FaceIdentificationPane}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -203,6 +205,6 @@
                 </Image.Style>
             </Image>
         </Grid>
-        <Button Grid.Column="2" Grid.Row="1" Content="Choose Image" Width="300" Height="35" BorderBrush="Transparent" Foreground="White" Background="#2196f3" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0, 0, 0, 0" Click="Identify_Click"/>
+        <Button Grid.Column="2" Grid.Row="1" Content="Choose Image" Width="300" Height="35" BorderBrush="Transparent" Foreground="White" Background="#2196f3" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0, 0, 0, 0" IsEnabled="False" Name="IdentifyButton" Click="Identify_Click"/>
     </Grid>
 </Page>

@@ -32,22 +32,25 @@
 //
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
+using System.Windows.Input;
+using System.Windows.Media;
 using ClientContract = Microsoft.ProjectOxford.Face.Contract;
 
 namespace Microsoft.ProjectOxford.Face.Controls
 {
     /// <summary>
-    /// Interaction logic for FaceDetection.xaml
+    /// Interaction logic for FaceFindSimilar.xaml
     /// </summary>
     public partial class FaceFindSimilarPage : Page, INotifyPropertyChanged
     {
@@ -64,9 +67,14 @@ namespace Microsoft.ProjectOxford.Face.Controls
         private ObservableCollection<Face> _facesCollection = new ObservableCollection<Face>();
 
         /// <summary>
-        /// Find similar results
+        /// Find personal match mode similar results
         /// </summary>
-        private ObservableCollection<FindSimilarResult> _findSimilarCollection = new ObservableCollection<FindSimilarResult>();
+        private ObservableCollection<FindSimilarResult> _findSimilarMatchPersonCollection = new ObservableCollection<FindSimilarResult>();
+
+        /// <summary>
+        /// Find facial match mode similar results  
+        /// </summary>
+        private ObservableCollection<FindSimilarResult> _findSimilarMatchCollection = new ObservableCollection<FindSimilarResult>();
 
         /// <summary>
         /// User picked image file path
@@ -79,9 +87,14 @@ namespace Microsoft.ProjectOxford.Face.Controls
         private ObservableCollection<Face> _targetFaces = new ObservableCollection<Face>();
 
         /// <summary>
+        /// max concurrent process number for client query.
+        /// </summary>
+        private int _maxConcurrentProcesses;
+
+        /// <summary>
         /// Temporary stored face list name
         /// </summary>
-        private string _faceListName = string.Empty;
+        private string _faceListName = Guid.NewGuid().ToString();
 
         #endregion Fields
 
@@ -93,8 +106,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
         public FaceFindSimilarPage()
         {
             InitializeComponent();
+            _maxConcurrentProcesses = 4;
         }
-
         #endregion Constructors
 
         #region Events
@@ -136,13 +149,24 @@ namespace Microsoft.ProjectOxford.Face.Controls
         }
 
         /// <summary>
-        /// Gets find similar results
+        /// Gets find "matchFace" mode similar results
         /// </summary>
-        public ObservableCollection<FindSimilarResult> FindSimilarCollection
+        public ObservableCollection<FindSimilarResult> FindSimilarMatchFaceCollection
         {
             get
             {
-                return _findSimilarCollection;
+                return _findSimilarMatchCollection;
+            }
+        }
+        
+        /// <summary>
+        /// Gets find "matchPerson" mode similar results
+        /// </summary>
+        public ObservableCollection<FindSimilarResult> FindSimilarMatchPersonCollection
+        {
+            get
+            {
+                return _findSimilarMatchPersonCollection;
             }
         }
 
@@ -193,7 +217,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
         #region Methods
 
         /// <summary>
-        /// Pick image and call find similar for each faces detected
+        /// Pick image and call find similar with both two modes for each faces detected
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Event arguments</param>
@@ -202,7 +226,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             // Show file picker
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.DefaultExt = ".jpg";
-            dlg.Filter = "Image files(*.jpg) | *.jpg";
+            dlg.Filter = "Image files (*.jpg, *.png, *.bmp, *.gif) | *.jpg; *.png; *.bmp; *.gif";
             var filePicker = dlg.ShowDialog();
 
             if (filePicker.HasValue && filePicker.Value)
@@ -210,8 +234,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 // User picked image
                 // Clear previous detection and find similar results
                 TargetFaces.Clear();
-                FindSimilarCollection.Clear();
-
+                FindSimilarMatchPersonCollection.Clear();
+                FindSimilarMatchFaceCollection.Clear();
                 var sw = Stopwatch.StartNew();
                 SelectedFile = dlg.FileName;
 
@@ -234,25 +258,25 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         TargetFaces.Add(face);
                     }
 
-                    MainWindow.Log("Response: Success. Detected {0} face(s) in {0}", faces.Length, SelectedFile);
+                    MainWindow.Log("Response: Success. Detected {0} face(s) in {1}", faces.Length, SelectedFile);
 
-                    // Find similar faces for each face
+                    // Find two modes similar faces for each face
                     foreach (var f in faces)
                     {
                         var faceId = f.FaceId;
 
-                        MainWindow.Log("Request: Finding similar faces for face {0}", faceId);
+                        MainWindow.Log("Request: Finding similar faces in Personal Match Mode for face {0}", faceId);
 
                         try
                         {
-                            // Call find similar REST API, the result contains all the face ids which similar to the query face
-                            const int requestCandidatesCount = 3;
+                            // Default mode, call find matchPerson similar REST API, the result contains all the face ids which is personal similar to the query face
+                            const int requestCandidatesCount = 4;
                             var result = await faceServiceClient.FindSimilarAsync(faceId, _faceListName, requestCandidatesCount);
 
-                            // Update find similar results collection for rendering
-                            var gg = new FindSimilarResult();
-                            gg.Faces = new ObservableCollection<Face>();
-                            gg.QueryFace = new Face()
+                            // Update find matchPerson similar results collection for rendering
+                            var personSimilarResult = new FindSimilarResult();
+                            personSimilarResult.Faces = new ObservableCollection<Face>();
+                            personSimilarResult.QueryFace = new Face()
                             {
                                 ImagePath = SelectedFile,
                                 Top = f.FaceRectangle.Top,
@@ -263,12 +287,54 @@ namespace Microsoft.ProjectOxford.Face.Controls
                             };
                             foreach (var fr in result)
                             {
-                                gg.Faces.Add(FacesCollection.First(ff => ff.FaceId == fr.PersistedFaceId.ToString()));
+                                var candidateFace = FacesCollection.First(ff => ff.FaceId == fr.PersistedFaceId.ToString());
+                                Face newFace = new Face(); 
+                                newFace.ImagePath = candidateFace.ImagePath; 
+                                newFace.Confidence = fr.Confidence;
+                                newFace.FaceId = candidateFace.FaceId;
+                                personSimilarResult.Faces.Add(newFace);
                             }
 
-                            MainWindow.Log("Response: Found {0} similar faces for face {1}", gg.Faces.Count, faceId);
+                            MainWindow.Log("Response: Found {0} similar faces for face {1}", personSimilarResult.Faces.Count, faceId);
 
-                            FindSimilarCollection.Add(gg);
+                            FindSimilarMatchPersonCollection.Add(personSimilarResult);
+                        }
+                        catch (FaceAPIException ex)
+                        {
+                            MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
+                        }
+
+                        try
+                        {
+                            // Call find facial match similar REST API, the result faces the top N with the highest similar confidence 
+                            const int requestCandidatesCount = 4;
+                            var result = await faceServiceClient.FindSimilarAsync(faceId, _faceListName, FindSimilarMatchMode.matchFace, requestCandidatesCount);
+
+                            // Update "matchFace" similar results collection for rendering
+                            var faceSimilarResults = new FindSimilarResult();
+                            faceSimilarResults.Faces = new ObservableCollection<Face>();
+                            faceSimilarResults.QueryFace = new Face()
+                            {
+                                ImagePath = SelectedFile,
+                                Top = f.FaceRectangle.Top,
+                                Left = f.FaceRectangle.Left,
+                                Width = f.FaceRectangle.Width,
+                                Height = f.FaceRectangle.Height,
+                                FaceId = faceId.ToString(),
+                            };
+                            foreach (var fr in result)
+                            {
+                                var candidateFace = FacesCollection.First(ff => ff.FaceId == fr.PersistedFaceId.ToString());
+                                Face newFace = new Face();
+                                newFace.ImagePath = candidateFace.ImagePath;
+                                newFace.Confidence = fr.Confidence;
+                                newFace.FaceId = candidateFace.FaceId;
+                                faceSimilarResults.Faces.Add(newFace);
+                            }
+
+                            MainWindow.Log("Response: Found {0} similar faces for face {1}", faceSimilarResults.Faces.Count, faceId);
+
+                            FindSimilarMatchFaceCollection.Add(faceSimilarResults);
                         }
                         catch (FaceAPIException ex)
                         {
@@ -277,6 +343,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     }
                 }
             }
+            GC.Collect();
         }
 
         /// <summary>
@@ -286,12 +353,54 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// <param name="e">Event arguments</param>
         private async void FolderPicker_Click(object sender, RoutedEventArgs e)
         {
+            bool groupExists = false;
+
+            MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
+            string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
+
+            var faceServiceClient = new FaceServiceClient(subscriptionKey);
+            try
+            {
+                MainWindow.Log("Request: Face List {0} will be used to build a person database. Checking whether the face list exists.", _faceListName);
+
+                await faceServiceClient.GetFaceListAsync(_faceListName);
+                groupExists = true;
+                MainWindow.Log("Response: Face List {0} exists.", _faceListName);
+            }
+            catch (FaceAPIException ex)
+            {
+                if (ex.ErrorCode != "FaceListNotFound")
+                {
+                    MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
+                    return;
+                }
+                else
+                {
+                    MainWindow.Log("Response: Face List {0} did not exist previously.", _faceListName);
+                }
+            }
+
+            if (groupExists)
+            {
+                var cleanFaceList = System.Windows.MessageBox.Show(string.Format("Requires a clean up for face list \"{0}\" before setting up a new face list. Click OK to proceed, face list \"{0}\" will be cleared.", _faceListName), "Warning", MessageBoxButton.OKCancel);
+                if (cleanFaceList == MessageBoxResult.OK)
+                {
+                    await faceServiceClient.DeleteFaceListAsync(_faceListName);
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            OpenFaceButton.IsEnabled = false;
             // Show folder picker
             System.Windows.Forms.FolderBrowserDialog dlg = new System.Windows.Forms.FolderBrowserDialog();
             var result = dlg.ShowDialog();
 
             bool forceContinue = false;
 
+            
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 // Enumerate all ".jpg" files in the folder, call detect
@@ -299,25 +408,27 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                 FacesCollection.Clear();
                 TargetFaces.Clear();
-                FindSimilarCollection.Clear();
+                FindSimilarMatchPersonCollection.Clear();
+                FindSimilarMatchFaceCollection.Clear();
                 SelectedFile = null;
 
-                // Set the suggestion count is intent to minimum the data preparetion step only,
+                // Set the suggestion count is intent to minimum the data preparation step only,
                 // it's not corresponding to service side constraint
                 const int SuggestionCount = 10;
                 int processCount = 0;
 
                 MainWindow.Log("Request: Preparing, detecting faces in chosen folder.");
 
-                MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
-                string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-
-                var faceServiceClient = new FaceServiceClient(subscriptionKey);
-
-                _faceListName = Guid.NewGuid().ToString();
                 await faceServiceClient.CreateFaceListAsync(_faceListName, _faceListName, "face list for sample");
 
-                foreach (var img in Directory.EnumerateFiles(dlg.SelectedPath, "*.jpg", SearchOption.AllDirectories))
+                var imageList =
+                    new ConcurrentBag<string>(
+                        Directory.EnumerateFiles(dlg.SelectedPath, "*.*", SearchOption.AllDirectories)
+                            .Where(s => s.EndsWith(".jpg") || s.EndsWith(".png") || s.EndsWith(".bmp") || s.EndsWith(".gif")));
+                
+                string img;
+                int invalidImageCount = 0;
+                while (imageList.TryTake(out img))
                 {
                     tasks.Add(Task.Factory.StartNew(
                         async (obj) =>
@@ -329,11 +440,28 @@ namespace Microsoft.ProjectOxford.Face.Controls
                             {
                                 try
                                 {
-                                    var faces = await faceServiceClient.AddFaceToFaceListAsync(_faceListName, fStream);
+                                    var faces =
+                                        await faceServiceClient.AddFaceToFaceListAsync(_faceListName, fStream);
                                     return new Tuple<string, ClientContract.AddPersistedFaceResult>(imgPath, faces);
                                 }
-                                catch (FaceAPIException)
+                                catch (FaceAPIException ex)
                                 {
+                                    // if operation conflict, retry.
+                                    if (ex.ErrorCode.Equals("ConcurrentOperationConflict"))
+                                    {
+                                        imageList.Add(imgPath);
+                                        return null;
+                                    }
+                                    // if operation cause rate limit exceed, retry.
+                                    else if (ex.ErrorCode.Equals("RateLimitExceeded"))
+                                    {
+                                        imageList.Add(imgPath);
+                                        return null;
+                                    }
+                                    else if (ex.ErrorMessage.Contains("more than 1 face in the image."))
+                                    {
+                                        Interlocked.Increment(ref invalidImageCount);
+                                    }
                                     // Here we simply ignore all detection failure in this sample
                                     // You may handle these exceptions by check the Error.Error.Code and Error.Message property for ClientException object
                                     return new Tuple<string, ClientContract.AddPersistedFaceResult>(imgPath, null);
@@ -342,24 +470,30 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         },
                         img).Unwrap().ContinueWith((detectTask) =>
                         {
-                            var res = detectTask.Result;
-                            if (res.Item2 == null)
+                            var res = detectTask?.Result;
+                            if (res?.Item2 == null)
                             {
                                 return;
                             }
 
                             // Update detected faces on UI
                             this.Dispatcher.Invoke(
-                                new Action<ObservableCollection<Face>, string, ClientContract.AddPersistedFaceResult>(UIHelper.UpdateFace),
-                                FacesCollection,
-                                res.Item1,
-                                res.Item2);
+                            new Action
+                                <ObservableCollection<Face>, string, ClientContract.AddPersistedFaceResult>(
+                                UIHelper.UpdateFace),
+                            FacesCollection,
+                            res.Item1,
+                            res.Item2);
                         }));
+
                     processCount++;
 
                     if (processCount >= SuggestionCount && !forceContinue)
                     {
-                        var continueProcess = System.Windows.Forms.MessageBox.Show("The images loaded have reached the recommended count, may take long time if proceed. Would you like to continue to load images?", "Warning", System.Windows.Forms.MessageBoxButtons.YesNo);
+                        var continueProcess =
+                            System.Windows.Forms.MessageBox.Show(
+                                "The images loaded have reached the recommended count, may take long time if proceed. Would you like to continue to load images?",
+                                "Warning", System.Windows.Forms.MessageBoxButtons.YesNo);
                         if (continueProcess == System.Windows.Forms.DialogResult.Yes)
                         {
                             forceContinue = true;
@@ -369,14 +503,24 @@ namespace Microsoft.ProjectOxford.Face.Controls
                             break;
                         }
                     }
+
+                    if (tasks.Count >= _maxConcurrentProcesses || imageList.IsEmpty)
+                    {
+                        await Task.WhenAll(tasks);
+                        tasks.Clear();
+                    }
+
                 }
-
-                await Task.WhenAll(tasks);
-
+                if (invalidImageCount > 0)
+                {
+                    MainWindow.Log("Warning: more or less than one face is detected in {0} images, can not add to face list.", invalidImageCount);
+                }
                 MainWindow.Log("Response: Success. Total {0} faces are detected.", FacesCollection.Count);
             }
+            GC.Collect();
+            OpenFaceButton.IsEnabled = true;
         }
-
+        
         #endregion Methods
 
         #region Nested Types
@@ -392,7 +536,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             /// Similar faces collection
             /// </summary>
             private ObservableCollection<Face> _faces;
-
+            
             /// <summary>
             /// Query face
             /// </summary>
@@ -410,7 +554,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             #endregion Events
 
             #region Properties
-
+            
             /// <summary>
             /// Gets or sets similar faces collection
             /// </summary>
@@ -430,7 +574,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     }
                 }
             }
-
+            
             /// <summary>
             /// Gets or sets query face
             /// </summary>
@@ -454,6 +598,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
             #endregion Properties
         }
 
-        #endregion Nested Types
+        #endregion Nested Types        
     }
 }
