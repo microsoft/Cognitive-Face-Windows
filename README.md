@@ -19,7 +19,7 @@ This sample is a Windows WPF application to demonstrate the use of Face API. It 
  3. Pull in the shared Windows code by calling `git submodule update`
  4. Start Microsoft Visual Studio 2015 and select `File > Open > Project/Solution`.
  5. Go to `Sample-WPF Folder`.
- 6. Double-click the Visual Studio 2015 Solution (.sln) file EmotionAPI-WPF-Samples.
+ 6. Double-click the Visual Studio 2015 Solution (.sln) file FaceAPI-WPF-Samples.
  7. Press Ctrl+Shift+B, or select `Build > Build Solution`.
 
 ### Run the Sample
@@ -52,6 +52,9 @@ You can reach out to us anytime with questions and suggestions using our communi
  - **Feedback & feature requests:** [Cognitive Services UserVoice Forum](<https://cognitive.uservoice.com>)
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Updates
+* 8/2016: Sample updated for [July 2016 Face API changes](https://www.microsoft.com/cognitive-services/en-us/face-api/documentation/overview#changes)
 
 
 ## License
