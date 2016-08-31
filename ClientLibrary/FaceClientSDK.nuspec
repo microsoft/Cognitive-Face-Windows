@@ -14,7 +14,7 @@
     <summary>Use Face API Client Library to enrich your apps with Microsoft's state-of-the-art cloud-based face algorithms.</summary>
     <releaseNotes>User-configurable hostname</releaseNotes>
     <copyright>Copyright (c) 2016</copyright>
-    <tags>Face, Oxford, ProjectOxford Microsoft Cognitive</tags>
+    <tags>Face Oxford ProjectOxford Microsoft Cognitive</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="6.0.8" />
     </dependencies>
