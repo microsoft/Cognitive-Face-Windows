@@ -58,7 +58,7 @@ namespace Microsoft.ProjectOxford.Face
         /// <summary>
         /// The default service host.
         /// </summary>
-        private const string SERVICE_HOST = "https://api.projectoxford.ai/face/v1.0";
+        private const string DEFAULT_API_ROOT = "https://api.projectoxford.ai/face/v1.0";
 
         /// <summary>
         /// The JSON content type header.
@@ -148,7 +148,12 @@ namespace Microsoft.ProjectOxford.Face
         /// <summary>
         /// The subscription key.
         /// </summary>
-        private string _subscriptionKey;
+        private readonly string _subscriptionKey;
+
+        /// <summary>
+        /// The root URI for the service endpoint.
+        /// </summary>
+        private readonly string _apiRoot;
 
         /// <summary>
         /// The HTTP client
@@ -163,9 +168,17 @@ namespace Microsoft.ProjectOxford.Face
         /// Initializes a new instance of the <see cref="FaceServiceClient"/> class.
         /// </summary>
         /// <param name="subscriptionKey">The subscription key.</param>
-        public FaceServiceClient(string subscriptionKey)
+        public FaceServiceClient(string subscriptionKey) : this(subscriptionKey, DEFAULT_API_ROOT) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FaceServiceClient"/> class.
+        /// </summary>
+        /// <param name="subscriptionKey">The subscription key.</param>
+        /// <param name="apiRoot">Root URI for the service endpoint.</param>
+        public FaceServiceClient(string subscriptionKey, string apiRoot)
         {
             _subscriptionKey = subscriptionKey;
+            _apiRoot = apiRoot?.TrimEnd('/');
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add(SubscriptionKeyName, subscriptionKey);
         }
@@ -185,7 +198,7 @@ namespace Microsoft.ProjectOxford.Face
         /// <summary>
         /// Gets service endpoint address, overridable by subclasses, default to free subscription's endpoint.
         /// </summary>
-        protected virtual string ServiceHost => SERVICE_HOST;
+        protected virtual string ServiceHost => _apiRoot;
 
         /// <summary>
         /// Gets default request headers for all following http request
