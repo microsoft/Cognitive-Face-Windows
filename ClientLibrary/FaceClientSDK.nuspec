@@ -16,7 +16,7 @@
     <copyright>Copyright (c) 2016</copyright>
     <tags>Face Oxford ProjectOxford Microsoft Cognitive</tags>
     <dependencies>
-      <dependency id="Newtonsoft.Json" version="6.0.8" />
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
     </dependencies>
   </metadata>
 </package>
