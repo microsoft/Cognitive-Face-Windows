@@ -250,7 +250,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                 IsSmiling = face.FaceAttributes.Smile > 0.0 ? "Smile" : "Not Smile",
                                 Glasses = face.FaceAttributes.Glasses.ToString(),
                                 FacialHair = string.Format("Facial Hair: {0}", face.FaceAttributes.FacialHair.Moustache + face.FaceAttributes.FacialHair.Beard+face.FaceAttributes.FacialHair.Sideburns > 0 ? "Yes":"No"),
-                                HeadPose = string.Format("Pitch: {0}, Roll:{1}, Yaw:{2}", Math.Round(face.FaceAttributes.HeadPose.Pitch, 2), Math.Round(face.FaceAttributes.HeadPose.Roll, 2), Math.Round(face.FaceAttributes.HeadPose.Yaw, 2))
+                                HeadPose = string.Format("Pitch: {0}, Roll: {1}, Yaw: {2}", Math.Round(face.FaceAttributes.HeadPose.Pitch, 2), Math.Round(face.FaceAttributes.HeadPose.Roll, 2), Math.Round(face.FaceAttributes.HeadPose.Yaw, 2))
                             });
                         }
 
