@@ -128,9 +128,9 @@
                             <TextBlock Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Age}" />
                             <TextBlock Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding IsSmiling}" />
                             <TextBlock Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Glasses}" TextWrapping="Wrap" />
-                        <TextBlock Grid.Column="2" Grid.Row="2" VerticalAlignment="Top" Text="{Binding FacialHair}" TextWrapping="Wrap" />
-                        <TextBlock Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding HeadPose}" TextWrapping="Wrap" />
-                    </Grid>
+                            <TextBlock Grid.Column="2" Grid.Row="2" VerticalAlignment="Top" Text="{Binding FacialHair}" TextWrapping="Wrap" />
+                            <TextBlock Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding HeadPose}" TextWrapping="Wrap" />
+                        </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
                 <ListBox.ItemContainerStyle>

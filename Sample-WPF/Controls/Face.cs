@@ -102,6 +102,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// Indicates the headPose
         /// </summary>
         private string _headPose;
+
         #endregion Fields
 
         #region Events
