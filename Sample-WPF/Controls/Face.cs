@@ -332,6 +332,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating the head pose value.
+        /// </summary>
         public string HeadPose
         {
             get { return _headPose; }
