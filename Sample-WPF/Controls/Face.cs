@@ -98,6 +98,11 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// </summary>
         private string _glasses;
 
+        /// <summary>
+        /// Indicates the headPose
+        /// </summary>
+        private string _headPose;
+
         #endregion Fields
 
         #region Events
@@ -323,6 +328,16 @@ namespace Microsoft.ProjectOxford.Face.Controls
             set
             {
                 _glasses = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        public string HeadPose
+        {
+            get { return _headPose; }
+            set
+            {
+                _headPose = value;
                 OnPropertyChanged<string>();
             }
         }
