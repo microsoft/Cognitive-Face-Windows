@@ -31,92 +31,75 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-
 namespace Microsoft.ProjectOxford.Face.Contract
 {
     /// <summary>
-    /// The face attributes class that holds Age/Gender/Head Pose/Smile/Facial Hair information.
+    /// Represents length of moustache, beard and sideburn
     /// </summary>
-    public class FaceAttributes
+    public class Emotion
     {
         #region Properties
 
         /// <summary>
-        /// Gets or sets the age value.
+        /// Gets or sets the Anger value.
         /// </summary>
-        /// <value>
-        /// The age value.
-        /// </value>
-        public double Age
+        public double Anger
         {
             get; set;
         }
 
         /// <summary>
-        /// Gets or sets the gender.
+        /// Gets or sets the Contempt value.
         /// </summary>
-        /// <value>
-        /// The gender.
-        /// </value>
-        public string Gender
+        public double Contempt
         {
             get; set;
         }
 
         /// <summary>
-        /// Gets or sets the head pose.
+        /// Gets or sets the Disgust value.
         /// </summary>
-        /// <value>
-        /// The head pose.
-        /// </value>
-        public HeadPose HeadPose
+        public double Disgust
         {
             get; set;
         }
 
         /// <summary>
-        /// Gets or sets the smile value. Represents the confidence of face is smiling.
+        /// Gets or sets the Fear value.
         /// </summary>
-        /// <value>
-        /// The smile value.
-        /// </value>
-        public double Smile
+        public double Fear 
         {
             get; set;
         }
 
         /// <summary>
-        /// Gets or sets the facial hair.
+        /// Gets or sets the Contempt value.
         /// </summary>
-        /// <value>
-        /// The facial hair.
-        /// </value>
-        public FacialHair FacialHair
+        public double Happiness
         {
             get; set;
         }
 
         /// <summary>
-        /// Gets or sets the emotion.
+        /// Gets or sets the Neutral value.
         /// </summary>
-        /// <value>
-        /// The emotion.
-        /// </value>
-        public Emotion Emotion
+        public double Neutral
         {
             get; set;
         }
 
         /// <summary>
-        /// Gets or sets the glasses type.
+        /// Gets or sets the Sadness value.
         /// </summary>
-        /// <value>
-        /// The glasses type.
-        /// </value>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public Glasses Glasses
+        public double Sadness
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets or sets the Surprise value.
+        /// </summary>
+        public double Surprise
         {
             get; set;
         }

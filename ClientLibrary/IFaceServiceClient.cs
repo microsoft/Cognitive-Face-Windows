@@ -77,6 +77,11 @@ namespace Microsoft.ProjectOxford.Face
         /// Analyses glasses type
         /// </summary>
         Glasses,
+
+        /// <summary>
+        /// Analyses emotion
+        /// </summary>
+        Emotion,
     }
 
     /// <summary>
