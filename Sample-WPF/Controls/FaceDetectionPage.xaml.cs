@@ -204,7 +204,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             // Show file picker dialog
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.DefaultExt = ".jpg";
-            dlg.Filter = "Image files (*.jpg, *.png, *bmp, *.gif) | *.jpg; *.png; *.bmp; *.gif";
+            dlg.Filter = "Image files (*.jpg, *.png, *.bmp, *.gif) | *.jpg; *.png; *.bmp; *.gif";
             var result = dlg.ShowDialog();
 
             if (result.HasValue && result.Value)
@@ -274,8 +274,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
         private string GetEmotion(Microsoft.ProjectOxford.Face.Contract.Emotion emotion)
         {
-            string emotionType = "";
-            double emotionValue = 0;
+            string emotionType = string.Empty;
+            double emotionValue = 0.0;
             if (emotion.Anger > emotionValue)
             {
                 emotionValue = emotion.Anger;
