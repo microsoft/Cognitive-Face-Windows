@@ -178,7 +178,7 @@ namespace Microsoft.ProjectOxford.Face
         /// <param name="name">The name.</param>
         /// <param name="userData">The user data.</param>     
         /// <returns>Task object.</returns>
-        Task CreateFaceListAsync(string faceListId, string name, string userData);
+        Task CreateFaceListAsync(string faceListId, string name, string userData = null);
 
         /// <summary>
         /// Creates a person asynchronously.

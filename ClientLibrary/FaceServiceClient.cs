@@ -781,7 +781,7 @@ namespace Microsoft.ProjectOxford.Face
         /// <returns>
         /// Task object.
         /// </returns>
-        public async Task CreateFaceListAsync(string faceListId, string name, string userData)
+        public async Task CreateFaceListAsync(string faceListId, string name, string userData = null)
         {
             var requestUrl = string.Format("{0}/{1}/{2}", ServiceHost, FaceListsQuery, faceListId);
 
