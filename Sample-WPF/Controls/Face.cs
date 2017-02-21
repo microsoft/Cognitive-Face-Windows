@@ -89,11 +89,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
         private string _facialHair;
 
         /// <summary>
-        /// Indicates whether the face is smile or not
-        /// </summary>
-        private string _isSmiling;
-
-        /// <summary>
         /// Indicates the glasses type
         /// </summary>
         private string _glasses;
@@ -300,23 +295,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
             {
                 _facialHair = value;
                 OnPropertyChanged<string>();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the face is smile or not
-        /// </summary>
-        public string IsSmiling
-        {
-            get
-            {
-                return _isSmiling;
-            }
-
-            set
-            {
-                _isSmiling = value;
-                OnPropertyChanged<bool>();
             }
         }
 

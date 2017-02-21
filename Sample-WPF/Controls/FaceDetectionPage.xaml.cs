@@ -247,11 +247,10 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                 FaceId = face.FaceId.ToString(),
                                 Gender = face.FaceAttributes.Gender,
                                 Age = string.Format("{0:#} years old", face.FaceAttributes.Age),
-                                IsSmiling = face.FaceAttributes.Smile > 0.0 ? "Smile" : "Not Smile",
                                 Glasses = face.FaceAttributes.Glasses.ToString(),
                                 FacialHair = string.Format("Facial Hair: {0}", face.FaceAttributes.FacialHair.Moustache + face.FaceAttributes.FacialHair.Beard+face.FaceAttributes.FacialHair.Sideburns > 0 ? "Yes":"No"),
                                 HeadPose = string.Format("Pitch: {0}, Roll: {1}, Yaw: {2}", Math.Round(face.FaceAttributes.HeadPose.Pitch, 2), Math.Round(face.FaceAttributes.HeadPose.Roll, 2), Math.Round(face.FaceAttributes.HeadPose.Yaw, 2)),
-                                Emotion = $"Emotion: {GetEmotion(face.FaceAttributes.Emotion)}"
+                                Emotion = $"{GetEmotion(face.FaceAttributes.Emotion)}"
                             });
                         }
 
@@ -272,7 +271,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             }
         }
 
-        private string GetEmotion(Microsoft.ProjectOxford.Face.Contract.Emotion emotion)
+        private string GetEmotion(Common.Contract.EmotionScores emotion)
         {
             string emotionType = string.Empty;
             double emotionValue = 0.0;
@@ -316,7 +315,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 emotionValue = emotion.Surprise;
                 emotionType = "Surprise";
             }
-            return $"{emotionType} {emotionValue}";
+            return $"{emotionType}";
         }
 
         #endregion Methods
