@@ -230,7 +230,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
                         var faceServiceClient = new FaceServiceClient(subscriptionKey);
-                        Contract.Face[] faces = await faceServiceClient.DetectAsync(fileStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses });
+                        Contract.Face[] faces = await faceServiceClient.DetectAsync(fileStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair });
                         MainWindow.Log("Response: Success. Detected {0} face(s) in {1}", faces.Length, SelectedFile);
 
                         DetectedResultsInText = string.Format("{0} face(s) has been detected", faces.Length);
@@ -249,6 +249,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                 Age = string.Format("{0:#} years old", face.FaceAttributes.Age),
                                 IsSmiling = face.FaceAttributes.Smile > 0.0 ? "Smile" : "Not Smile",
                                 Glasses = face.FaceAttributes.Glasses.ToString(),
+                                FacialHair = string.Format("Facial Hair: {0}", face.FaceAttributes.FacialHair.Moustache + face.FaceAttributes.FacialHair.Beard+face.FaceAttributes.FacialHair.Sideburns > 0 ? "Yes":"No"),
+                                HeadPose = string.Format("Pitch: {0}, Roll: {1}, Yaw: {2}", Math.Round(face.FaceAttributes.HeadPose.Pitch, 2), Math.Round(face.FaceAttributes.HeadPose.Roll, 2), Math.Round(face.FaceAttributes.HeadPose.Yaw, 2))
                             });
                         }
 
