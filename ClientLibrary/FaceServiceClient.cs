@@ -58,7 +58,7 @@ namespace Microsoft.ProjectOxford.Face
         /// <summary>
         /// The default service host.
         /// </summary>
-        private const string DEFAULT_API_ROOT = "https://api.projectoxford.ai/face/v1.0";
+        private const string DEFAULT_API_ROOT = "https://westus.api.cognitive.microsoft.com/face/v1.0";
 
         /// <summary>
         /// The JSON content type header.
