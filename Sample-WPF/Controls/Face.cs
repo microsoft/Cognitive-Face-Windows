@@ -103,6 +103,11 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// </summary>
         private string _headPose;
 
+        /// <summary>
+        /// Indicates the emotion
+        /// </summary>
+        private string _emotion;
+
         #endregion Fields
 
         #region Events
@@ -341,6 +346,16 @@ namespace Microsoft.ProjectOxford.Face.Controls
             set
             {
                 _headPose = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        public string Emotion
+        {
+            get { return _emotion; }
+            set
+            {
+                _emotion = value;
                 OnPropertyChanged<string>();
             }
         }

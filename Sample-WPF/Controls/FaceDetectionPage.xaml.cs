@@ -204,7 +204,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             // Show file picker dialog
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.DefaultExt = ".jpg";
-            dlg.Filter = "Image files (*.jpg, *.png, *bmp, *.gif) | *.jpg; *.png; *.bmp; *.gif";
+            dlg.Filter = "Image files (*.jpg, *.png, *.bmp, *.gif) | *.jpg; *.png; *.bmp; *.gif";
             var result = dlg.ShowDialog();
 
             if (result.HasValue && result.Value)
@@ -230,7 +230,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
                         var faceServiceClient = new FaceServiceClient(subscriptionKey);
-                        Contract.Face[] faces = await faceServiceClient.DetectAsync(fileStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair });
+                        Contract.Face[] faces = await faceServiceClient.DetectAsync(fileStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair, FaceAttributeType.Emotion });
                         MainWindow.Log("Response: Success. Detected {0} face(s) in {1}", faces.Length, SelectedFile);
 
                         DetectedResultsInText = string.Format("{0} face(s) has been detected", faces.Length);
@@ -250,7 +250,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                 IsSmiling = face.FaceAttributes.Smile > 0.0 ? "Smile" : "Not Smile",
                                 Glasses = face.FaceAttributes.Glasses.ToString(),
                                 FacialHair = string.Format("Facial Hair: {0}", face.FaceAttributes.FacialHair.Moustache + face.FaceAttributes.FacialHair.Beard+face.FaceAttributes.FacialHair.Sideburns > 0 ? "Yes":"No"),
-                                HeadPose = string.Format("Pitch: {0}, Roll: {1}, Yaw: {2}", Math.Round(face.FaceAttributes.HeadPose.Pitch, 2), Math.Round(face.FaceAttributes.HeadPose.Roll, 2), Math.Round(face.FaceAttributes.HeadPose.Yaw, 2))
+                                HeadPose = string.Format("Pitch: {0}, Roll: {1}, Yaw: {2}", Math.Round(face.FaceAttributes.HeadPose.Pitch, 2), Math.Round(face.FaceAttributes.HeadPose.Roll, 2), Math.Round(face.FaceAttributes.HeadPose.Yaw, 2)),
+                                Emotion = $"Emotion: {GetEmotion(face.FaceAttributes.Emotion)}"
                             });
                         }
 
@@ -269,6 +270,53 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     GC.Collect();
                 }
             }
+        }
+
+        private string GetEmotion(Microsoft.ProjectOxford.Face.Contract.Emotion emotion)
+        {
+            string emotionType = string.Empty;
+            double emotionValue = 0.0;
+            if (emotion.Anger > emotionValue)
+            {
+                emotionValue = emotion.Anger;
+                emotionType = "Anger";
+            }
+            if (emotion.Contempt > emotionValue)
+            {
+                emotionValue = emotion.Contempt;
+                emotionType = "Contempt";
+            }
+            if (emotion.Disgust > emotionValue)
+            {
+                emotionValue = emotion.Disgust;
+                emotionType = "Disgust";
+            }
+            if (emotion.Fear > emotionValue)
+            {
+                emotionValue = emotion.Fear;
+                emotionType = "Fear";
+            }
+            if (emotion.Happiness > emotionValue)
+            {
+                emotionValue = emotion.Happiness;
+                emotionType = "Happiness";
+            }
+            if (emotion.Neutral > emotionValue)
+            {
+                emotionValue = emotion.Neutral;
+                emotionType = "Neutral";
+            }
+            if (emotion.Sadness > emotionValue)
+            {
+                emotionValue = emotion.Sadness;
+                emotionType = "Sadness";
+            }
+            if (emotion.Surprise > emotionValue)
+            {
+                emotionValue = emotion.Surprise;
+                emotionType = "Surprise";
+            }
+            return $"{emotionType} {emotionValue}";
         }
 
         #endregion Methods
