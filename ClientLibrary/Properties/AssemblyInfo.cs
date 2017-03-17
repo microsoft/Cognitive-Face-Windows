@@ -37,7 +37,7 @@ using System.Resources;
 [assembly: AssemblyDescription("Microsoft.CognitiveServices.Face")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Microsoft CognitiveServices")]
-[assembly: AssemblyCopyright("Copyright © 2015 Microsoft")]
+[assembly: AssemblyCopyright("Copyright © 2016 Microsoft")]
 [assembly: AssemblyTrademark("Microsoft")]
 [assembly: NeutralResourcesLanguage("en")]
 
