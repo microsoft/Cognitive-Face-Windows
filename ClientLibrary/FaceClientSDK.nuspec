@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>Microsoft.ProjectOxford.Face</id>
+    <id>Microsoft.CognitiveServices.Face</id>
     <title>Microsoft Cognitive Services Face API Client Library</title>
     <version>$version$</version>
     <authors>Microsoft</authors>
@@ -14,7 +14,7 @@
     <summary>Use Face API Client Library to enrich your apps with Microsoft's state-of-the-art cloud-based face algorithms.</summary>
     <releaseNotes>User-configurable hostname</releaseNotes>
     <copyright>Copyright (c) 2016</copyright>
-    <tags>Face Oxford ProjectOxford Microsoft Cognitive</tags>
+    <tags>Face Oxford ProjectOxford Microsoft Cognitive CognitiveServices</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="9.0.1" />
     </dependencies>

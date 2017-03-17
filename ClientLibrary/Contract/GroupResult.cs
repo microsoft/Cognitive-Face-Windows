@@ -34,7 +34,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.ProjectOxford.Face.Contract
+namespace Microsoft.CognitiveServices.Face.Contract
 {
     /// <summary>
     /// The class for group result.

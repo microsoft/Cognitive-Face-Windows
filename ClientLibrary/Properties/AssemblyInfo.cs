@@ -33,10 +33,10 @@
 using System.Reflection;
 using System.Resources;
 
-[assembly: AssemblyTitle("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyDescription("Microsoft.ProjectOxford.Face")]
+[assembly: AssemblyTitle("Microsoft.CognitiveServices.Face")]
+[assembly: AssemblyDescription("Microsoft.CognitiveServices.Face")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft ProjectOxford")]
+[assembly: AssemblyProduct("Microsoft CognitiveServices")]
 [assembly: AssemblyCopyright("Copyright © 2015 Microsoft")]
 [assembly: AssemblyTrademark("Microsoft")]
 [assembly: NeutralResourcesLanguage("en")]

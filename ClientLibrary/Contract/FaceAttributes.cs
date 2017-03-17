@@ -34,7 +34,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Microsoft.ProjectOxford.Face.Contract
+namespace Microsoft.CognitiveServices.Face.Contract
 {
     /// <summary>
     /// The face attributes class that holds Age/Gender/Head Pose/Smile/Facial Hair information.
@@ -104,7 +104,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         /// <value>
         /// The emotion.
         /// </value>
-        public Common.Contract.EmotionScores Emotion
+        public Microsoft.ProjectOxford.Common.Contract.EmotionScores Emotion
         {
             get; set;
         }

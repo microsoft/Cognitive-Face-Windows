@@ -35,7 +35,7 @@ using System;
 using System.Net;
 using System.Runtime.Serialization;
 
-namespace Microsoft.ProjectOxford.Face.Contract
+namespace Microsoft.CognitiveServices.Face.Contract
 {
     /// <summary>
     /// Represents client error with detailed error message and error code

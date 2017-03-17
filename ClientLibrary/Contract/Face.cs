@@ -33,7 +33,7 @@
 
 using System;
 
-namespace Microsoft.ProjectOxford.Face.Contract
+namespace Microsoft.CognitiveServices.Face.Contract
 {
     /// <summary>
     /// The detected face entity.
