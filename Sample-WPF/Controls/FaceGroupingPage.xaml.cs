@@ -43,9 +43,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using ClientContract = Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.CognitiveServices.Face;
+using ClientContract = Microsoft.CognitiveServices.Face.Contract;
 
-namespace Microsoft.ProjectOxford.Face.Controls
+namespace Microsoft.CognitiveServices.Face.Controls
 {
     /// <summary>
     /// Interaction logic for FaceDetection.xaml

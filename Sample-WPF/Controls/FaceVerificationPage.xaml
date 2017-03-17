@@ -32,12 +32,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 
-<Page x:Class="Microsoft.ProjectOxford.Face.Controls.FaceVerificationPage"
+<Page x:Class="Microsoft.CognitiveServices.Face.Controls.FaceVerificationPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:uc="clr-namespace:Microsoft.ProjectOxford.Face.Controls"
+             xmlns:uc="clr-namespace:Microsoft.CognitiveServices.Face.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="720" d:DesignWidth="710" MinHeight="360" FontSize="14" x:Name="FaceVerificationPane">
     <ScrollViewer >

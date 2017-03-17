@@ -32,8 +32,9 @@
 //
 
 using System.Windows;
+using Microsoft.CognitiveServices.Face;
 
-namespace Microsoft.ProjectOxford.Face
+namespace Microsoft.CognitiveServices.Face
 {
     /// <summary>
     /// Interaction logic for App.xaml

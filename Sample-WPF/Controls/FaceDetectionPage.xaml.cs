@@ -32,17 +32,14 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 
-namespace Microsoft.ProjectOxford.Face.Controls
+namespace Microsoft.CognitiveServices.Face.Controls
 {
     /// <summary>
     /// Interaction logic for FaceDetectionPage.xaml
@@ -230,7 +227,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
                         var faceServiceClient = new FaceServiceClient(subscriptionKey);
-                        Contract.Face[] faces = await faceServiceClient.DetectAsync(fileStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair, FaceAttributeType.Emotion });
+                        CognitiveServices.Face.Contract.Face[] faces = await faceServiceClient.DetectAsync(fileStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair, FaceAttributeType.Emotion });
                         MainWindow.Log("Response: Success. Detected {0} face(s) in {1}", faces.Length, SelectedFile);
 
                         DetectedResultsInText = string.Format("{0} face(s) has been detected", faces.Length);
@@ -271,7 +268,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             }
         }
 
-        private string GetEmotion(Common.Contract.EmotionScores emotion)
+        private string GetEmotion(Microsoft.ProjectOxford.Common.Contract.EmotionScores emotion)
         {
             string emotionType = string.Empty;
             double emotionValue = 0.0;

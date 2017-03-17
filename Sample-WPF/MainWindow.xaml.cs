@@ -36,11 +36,11 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-using Microsoft.ProjectOxford.Face.Controls;
+using Microsoft.CognitiveServices.Face.Controls;
 
 using SampleUserControlLibrary;
 
-namespace Microsoft.ProjectOxford.Face
+namespace Microsoft.CognitiveServices.Face
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
