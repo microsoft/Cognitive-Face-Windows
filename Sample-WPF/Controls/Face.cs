@@ -33,6 +33,7 @@
 
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
 
 namespace Microsoft.CognitiveServices.Face.Controls
 {
@@ -102,6 +103,41 @@ namespace Microsoft.CognitiveServices.Face.Controls
         /// Indicates the emotion
         /// </summary>
         private string _emotion;
+
+        /// <summary>
+        /// Indicates the blur
+        /// </summary>
+        private string _blur;
+
+        /// <summary>
+        /// Indicates the exposure
+        /// </summary>
+        private string _exposure;
+
+        /// <summary>
+        /// Indicates the noise
+        /// </summary>
+        private string _noise;
+
+        /// <summary>
+        /// Indicates the makeup
+        /// </summary>
+        private string _makeup;
+
+        /// <summary>
+        /// Indicates the accessories
+        /// </summary>
+        private string _accessories;
+
+        /// <summary>
+        /// Indicates the occlusion
+        /// </summary>
+        private string _occlusion;
+
+        /// <summary>
+        /// Indicates the hair
+        /// </summary>
+        private string _hair;
 
         #endregion Fields
 
@@ -181,7 +217,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
         /// <summary>
         /// Gets or sets image path
         /// </summary>
-        public string ImagePath
+        public ImageSource ImageFile
         {
             get;
             set;
@@ -334,6 +370,76 @@ namespace Microsoft.CognitiveServices.Face.Controls
             set
             {
                 _emotion = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        public string Blur
+        {
+            get { return _blur; }
+            set
+            {
+                _blur = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        public string Exposure
+        {
+            get { return _exposure; }
+            set
+            {
+                _exposure = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        public string Noise
+        {
+            get { return _noise; }
+            set
+            {
+                _noise = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        public string Makeup
+        {
+            get { return _makeup; }
+            set
+            {
+                _makeup = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        public string Accessories
+        {
+            get { return _accessories; }
+            set
+            {
+                _accessories = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        public string Occlusion
+        {
+            get { return _occlusion; }
+            set
+            {
+                _occlusion = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        public string Hair
+        {
+            get { return _hair; }
+            set
+            {
+                _hair = value;
                 OnPropertyChanged<string>();
             }
         }

@@ -38,8 +38,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Contract\Accessory.cs" />
+    <Compile Include="Contract\Blur.cs" />
     <Compile Include="Contract\ClientError.cs" />
     <Compile Include="Contract\AddPersistedFaceResult.cs" />
+    <Compile Include="Contract\Exposure.cs" />
     <Compile Include="Contract\Face.cs" />
     <Compile Include="Contract\FaceAttributes.cs" />
     <Compile Include="Contract\FaceList.cs" />
@@ -47,11 +50,15 @@
     <Compile Include="Contract\FaceMetadata.cs" />
     <Compile Include="Contract\FacialHair.cs" />
     <Compile Include="Contract\GlassesTypes.cs" />
+    <Compile Include="Contract\Hair.cs" />
     <Compile Include="Contract\HeadPose.cs" />
     <Compile Include="Contract\FaceRectangle.cs" />
     <Compile Include="Contract\FaceLandmarks.cs" />
     <Compile Include="Contract\GroupResult.cs" />
     <Compile Include="Contract\IdentifyResult.cs" />
+    <Compile Include="Contract\Makeup.cs" />
+    <Compile Include="Contract\Noise.cs" />
+    <Compile Include="Contract\Occlusion.cs" />
     <Compile Include="Contract\Person.cs" />
     <Compile Include="Contract\Candidate.cs" />
     <Compile Include="Contract\CreatePersonResult.cs" />

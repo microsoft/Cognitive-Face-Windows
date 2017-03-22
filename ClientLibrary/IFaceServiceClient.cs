@@ -82,6 +82,41 @@ namespace Microsoft.CognitiveServices.Face
         /// Analyses emotion
         /// </summary>
         Emotion,
+
+        /// <summary>
+        /// Analyses hair
+        /// </summary>
+        Hair,
+
+        /// <summary>
+        /// Analyses makeup
+        /// </summary>
+        Makeup,
+
+        /// <summary>
+        /// Analyses occlusion
+        /// </summary>
+        Occlusion,
+
+        /// <summary>
+        /// Analyses accessory
+        /// </summary>
+        Accessories,
+
+        /// <summary>
+        /// Analyses noise
+        /// </summary>
+        Noise,
+
+        /// <summary>
+        /// Analyses exposure
+        /// </summary>
+        Exposure,
+
+        /// <summary>
+        /// Analyses blur
+        /// </summary>
+        Blur
     }
 
     /// <summary>

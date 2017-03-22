@@ -571,14 +571,31 @@ namespace Microsoft.CognitiveServices.Face
         /// <returns>
         /// The person entity array.
         /// </returns>
+        [Obsolete("use ListPersonsAsync instead")]
         public async Task<Person[]> GetPersonsAsync(string personGroupId)
         {
+            return await ListPersonsAsync(personGroupId);
+        }
+
+        /// <summary>
+        /// List the top persons whose Id is larger than "start" inside a person group asynchronously.
+        /// </summary>
+        /// <param name="personGroupId">The person group id.</param>
+        /// <param name="start">person Id bar. List the persons whose Id is larger than "start".</param>
+        /// <param name="top">the number of persons to list.</param>>
+        /// <returns>
+        /// The person entity array.
+        /// </returns>
+        public async Task<Person[]> ListPersonsAsync(string personGroupId, string start = "", int top = 1000)
+        {
             var requestUrl = string.Format(
-                "{0}/{1}/{2}/{3}",
+                "{0}/{1}/{2}/{3}?start={4}$top={5}",
                 ServiceHost,
                 PersonGroupsQuery,
                 personGroupId,
-                PersonsQuery);
+                PersonsQuery,
+                start,
+                top);
 
             return await this.SendRequestAsync<object, Person[]>(HttpMethod.Get, requestUrl, null);
         }
