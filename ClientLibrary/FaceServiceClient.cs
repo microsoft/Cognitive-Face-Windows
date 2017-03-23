@@ -462,7 +462,7 @@ namespace Microsoft.CognitiveServices.Face
         public async Task<PersonGroup[]> ListPersonGroupsAsync(string start = "", int top = 1000)
         {
             var requestUrl = string.Format(
-                "{0}/{1}?start={2}$top={3}",
+                "{0}/{1}?start={2}&top={3}",
                 ServiceHost,
                 PersonGroupsQuery,
                 start,
@@ -589,13 +589,13 @@ namespace Microsoft.CognitiveServices.Face
         public async Task<Person[]> ListPersonsAsync(string personGroupId, string start = "", int top = 1000)
         {
             var requestUrl = string.Format(
-                "{0}/{1}/{2}/{3}?start={4}$top={5}",
+                "{0}/{1}/{2}/{3}?start={4}&top={5}",
                 ServiceHost,
                 PersonGroupsQuery,
                 personGroupId,
                 PersonsQuery,
                 start,
-                top);
+                top.ToString(CultureInfo.InvariantCulture));
 
             return await this.SendRequestAsync<object, Person[]>(HttpMethod.Get, requestUrl, null);
         }
