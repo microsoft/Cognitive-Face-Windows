@@ -50,6 +50,55 @@ namespace Microsoft.CognitiveServices.Face.Controls
         #region Methods
 
         /// <summary>
+        /// Rotate image by its orientation
+        /// </summary>
+        /// <param name="imagePath">image path</param>
+        /// <returns>image for rendering</returns>
+        public static BitmapImage LoadImageAppliedOrientation(string imagePath)
+        {
+            var im = new BitmapImage();
+            im.BeginInit();
+            im.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
+            im.Rotation = GetImageOrientation(imagePath);
+            im.EndInit();
+            return im;
+        }
+
+        /// <summary>
+        /// Get image orientation flag.
+        /// </summary>
+        /// <param name="imagePath">image path</param>
+        /// <returns></returns>
+        public static Rotation GetImageOrientation(string imagePath)
+        {
+            using (var fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+            {
+                // See WIC Photo metadata policies for orientation query 
+                // https://msdn.microsoft.com/en-us/library/windows/desktop/ee872007(v=vs.85).aspx
+                const string query = "System.Photo.Orientation";
+                var metadata = (BitmapMetadata)(BitmapFrame.Create(fs).Metadata);
+
+                if (metadata != null && metadata.ContainsQuery(query))
+                {
+                    var orientationFlag = metadata.GetQuery(query);
+                    if (orientationFlag != null)
+                    {
+                        switch ((ushort)orientationFlag)
+                        {
+                            case 6:
+                                return Rotation.Rotate90;
+                            case 3:
+                                return Rotation.Rotate180;
+                            case 8:
+                                return Rotation.Rotate270;
+                        }
+                    }
+                }
+            }
+            return Rotation.Rotate0;
+        }
+
+        /// <summary>
         /// Calculate the rendering face rectangle
         /// </summary>
         /// <param name="faces">Detected face from service</param>
@@ -94,20 +143,13 @@ namespace Microsoft.CognitiveServices.Face.Controls
         /// <summary>
         /// Get image basic information for further rendering usage
         /// </summary>
-        /// <param name="imageFilePath">Path to the image file</param>
+        /// <param name="imageFile">image file</param>
         /// <returns>Image width and height</returns>
-        public static Tuple<int, int> GetImageInfoForRendering(string imageFilePath)
+        public static Tuple<int, int> GetImageInfoForRendering(BitmapImage imageFile)
         {
             try
             {
-                using (var s = File.OpenRead(imageFilePath))
-                {
-                    JpegBitmapDecoder decoder = new JpegBitmapDecoder(s, BitmapCreateOptions.None, BitmapCacheOption.None);
-                    var frame = decoder.Frames.First();
-
-                    // Store image width and height for following rendering
-                    return new Tuple<int, int>(frame.PixelWidth, frame.PixelHeight);
-                }
+                return new Tuple<int, int>(imageFile.PixelWidth, imageFile.PixelHeight);
             }
             catch
             {
@@ -119,13 +161,14 @@ namespace Microsoft.CognitiveServices.Face.Controls
         /// Append detected face to UI binding collection
         /// </summary>
         /// <param name="collections">UI binding collection</param>
-        /// <param name="path">Original image path, used for rendering face region</param>
+        /// <param name="imagePath">Original image path, used for rendering face region</param>
         /// <param name="face">Face structure returned from service</param>
-        public static void UpdateFace(ObservableCollection<Face> collections, string path, Microsoft.CognitiveServices.Face.Contract.AddPersistedFaceResult face)
+        public static void UpdateFace(ObservableCollection<Face> collections, string imagePath, Microsoft.CognitiveServices.Face.Contract.AddPersistedFaceResult face)
         {
+            var renderingImage = LoadImageAppliedOrientation(imagePath);
             collections.Add(new Face()
             {
-                ImagePath = path,
+                ImageFile = renderingImage,
                 FaceId = face.PersistedFaceId.ToString(),
             });
         }
@@ -134,13 +177,14 @@ namespace Microsoft.CognitiveServices.Face.Controls
         /// Append detected face to UI binding collection
         /// </summary>
         /// <param name="collections">UI binding collection</param>
-        /// <param name="path">Original image path, used for rendering face region</param>
+        /// <param name="imagePath">Original image path, used for rendering face region</param>
         /// <param name="face">Face structure returned from service</param>
-        public static void UpdateFace(ObservableCollection<Face> collections, string path, Microsoft.CognitiveServices.Face.Contract.Face face)
+        public static void UpdateFace(ObservableCollection<Face> collections, string imagePath, Microsoft.CognitiveServices.Face.Contract.Face face)
         {
+            var renderingImage = LoadImageAppliedOrientation(imagePath);
             collections.Add(new Face()
             {
-                ImagePath = path,
+                ImageFile = renderingImage,
                 Left = face.FaceRectangle.Left,
                 Top = face.FaceRectangle.Top,
                 Width = face.FaceRectangle.Width,

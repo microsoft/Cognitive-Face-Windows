@@ -47,6 +47,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.CognitiveServices.Face;
 using ClientContract = Microsoft.CognitiveServices.Face.Contract;
+using System.Windows.Media;
 
 namespace Microsoft.CognitiveServices.Face.Controls
 {
@@ -78,9 +79,9 @@ namespace Microsoft.CognitiveServices.Face.Controls
         private ObservableCollection<Person> _persons = new ObservableCollection<Person>();
 
         /// <summary>
-        /// User picked image file path
+        /// User picked image file
         /// </summary>
-        private string _selectedFile;
+        private ImageSource _selectedFile;
 
         /// <summary>
         /// max concurrent process number for client query.
@@ -163,9 +164,9 @@ namespace Microsoft.CognitiveServices.Face.Controls
         }
 
         /// <summary>
-        /// Gets or sets user picked image file path
+        /// Gets or sets user picked image file
         /// </summary>
-        public string SelectedFile
+        public ImageSource SelectedFile
         {
             get
             {
@@ -435,11 +436,12 @@ namespace Microsoft.CognitiveServices.Face.Controls
                 // User picked one image
                 // Clear previous detection and identification results
                 TargetFaces.Clear();
-                SelectedFile = dlg.FileName;
+                var pickedImagePath = dlg.FileName;
+                var renderingImage = UIHelper.LoadImageAppliedOrientation(pickedImagePath);
+                var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+                SelectedFile = renderingImage;
 
                 var sw = Stopwatch.StartNew();
-
-                var imageInfo = UIHelper.GetImageInfoForRendering(dlg.FileName);
 
                 MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                 string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
@@ -447,11 +449,11 @@ namespace Microsoft.CognitiveServices.Face.Controls
                 var faceServiceClient = new FaceServiceClient(subscriptionKey);
 
                 // Call detection REST API
-                using (var fileStream = File.OpenRead(dlg.FileName))
+                using (var fStream = File.OpenRead(pickedImagePath))
                 {
                     try
                     {
-                        var faces = await faceServiceClient.DetectAsync(fileStream);
+                        var faces = await faceServiceClient.DetectAsync(fStream);
 
                         // Convert detection result into UI binding object for rendering
                         foreach (var face in UIHelper.CalculateFaceRectangleForRendering(faces, MaxImageSize, imageInfo))

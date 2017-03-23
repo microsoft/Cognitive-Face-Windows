@@ -78,9 +78,9 @@ namespace Microsoft.CognitiveServices.Face.Controls
         private ObservableCollection<FindSimilarResult> _findSimilarMatchCollection = new ObservableCollection<FindSimilarResult>();
 
         /// <summary>
-        /// User picked image file path
+        /// User picked image file
         /// </summary>
-        private string _selectedFile;
+        private ImageSource _selectedFile;
 
         /// <summary>
         /// Query faces
@@ -183,9 +183,9 @@ namespace Microsoft.CognitiveServices.Face.Controls
         }
 
         /// <summary>
-        /// Gets or sets user picked image file path
+        /// Gets or sets user picked image file
         /// </summary>
-        public string SelectedFile
+        public ImageSource SelectedFile
         {
             get
             {
@@ -238,12 +238,14 @@ namespace Microsoft.CognitiveServices.Face.Controls
                 FindSimilarMatchPersonCollection.Clear();
                 FindSimilarMatchFaceCollection.Clear();
                 var sw = Stopwatch.StartNew();
-                SelectedFile = dlg.FileName;
 
-                var imageInfo = UIHelper.GetImageInfoForRendering(SelectedFile);
+                var pickedImagePath = dlg.FileName;
+                var renderingImage = UIHelper.LoadImageAppliedOrientation(pickedImagePath);
+                var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+                SelectedFile = renderingImage;
 
                 // Detect all faces in the picked image
-                using (var fileStream = File.OpenRead(SelectedFile))
+                using (var fStream = File.OpenRead(pickedImagePath))
                 {
                     MainWindow.Log("Request: Detecting faces in {0}", SelectedFile);
 
@@ -251,7 +253,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                     string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
                     var faceServiceClient = new FaceServiceClient(subscriptionKey);
-                    var faces = await faceServiceClient.DetectAsync(fileStream);
+                    var faces = await faceServiceClient.DetectAsync(fStream);
 
                     // Update detected faces on UI
                     foreach (var face in UIHelper.CalculateFaceRectangleForRendering(faces, MaxImageSize, imageInfo))
@@ -279,7 +281,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                             personSimilarResult.Faces = new ObservableCollection<Face>();
                             personSimilarResult.QueryFace = new Face()
                             {
-                                ImagePath = SelectedFile,
+                                ImageFile = SelectedFile,
                                 Top = f.FaceRectangle.Top,
                                 Left = f.FaceRectangle.Left,
                                 Width = f.FaceRectangle.Width,
@@ -289,8 +291,8 @@ namespace Microsoft.CognitiveServices.Face.Controls
                             foreach (var fr in result)
                             {
                                 var candidateFace = FacesCollection.First(ff => ff.FaceId == fr.PersistedFaceId.ToString());
-                                Face newFace = new Face(); 
-                                newFace.ImagePath = candidateFace.ImagePath; 
+                                Face newFace = new Face();
+                                newFace.ImageFile = candidateFace.ImageFile;
                                 newFace.Confidence = fr.Confidence;
                                 newFace.FaceId = candidateFace.FaceId;
                                 personSimilarResult.Faces.Add(newFace);
@@ -316,7 +318,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                             faceSimilarResults.Faces = new ObservableCollection<Face>();
                             faceSimilarResults.QueryFace = new Face()
                             {
-                                ImagePath = SelectedFile,
+                                ImageFile = SelectedFile,
                                 Top = f.FaceRectangle.Top,
                                 Left = f.FaceRectangle.Left,
                                 Width = f.FaceRectangle.Width,
@@ -327,7 +329,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                             {
                                 var candidateFace = FacesCollection.First(ff => ff.FaceId == fr.PersistedFaceId.ToString());
                                 Face newFace = new Face();
-                                newFace.ImagePath = candidateFace.ImagePath;
+                                newFace.ImageFile = candidateFace.ImageFile;
                                 newFace.Confidence = fr.Confidence;
                                 newFace.FaceId = candidateFace.FaceId;
                                 faceSimilarResults.Faces.Add(newFace);
@@ -435,7 +437,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                         async (obj) =>
                         {
                             var imgPath = obj as string;
-
+                            
                             // Call detection
                             using (var fStream = File.OpenRead(imgPath))
                             {

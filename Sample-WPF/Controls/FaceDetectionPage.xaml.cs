@@ -38,6 +38,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Microsoft.CognitiveServices.Face.Controls
 {
@@ -69,9 +70,9 @@ namespace Microsoft.CognitiveServices.Face.Controls
         private ObservableCollection<Face> _resultCollection = new ObservableCollection<Face>();
 
         /// <summary>
-        /// Image path used for rendering and detecting
+        /// Image used for rendering and detecting
         /// </summary>
-        private string _selectedFile;
+        private ImageSource _selectedFile;
 
         #endregion Fields
 
@@ -168,9 +169,9 @@ namespace Microsoft.CognitiveServices.Face.Controls
         }
 
         /// <summary>
-        /// Gets or sets image path for rendering and detecting
+        /// Gets or sets image for rendering and detecting
         /// </summary>
-        public string SelectedFile
+        public ImageSource SelectedFile
         {
             get
             {
@@ -203,23 +204,25 @@ namespace Microsoft.CognitiveServices.Face.Controls
             dlg.DefaultExt = ".jpg";
             dlg.Filter = "Image files (*.jpg, *.png, *.bmp, *.gif) | *.jpg; *.png; *.bmp; *.gif";
             var result = dlg.ShowDialog();
-
+            
             if (result.HasValue && result.Value)
             {
                 // User picked one image
-                var imageInfo = UIHelper.GetImageInfoForRendering(dlg.FileName);
-                SelectedFile = dlg.FileName;
-
+                var pickedImagePath = dlg.FileName;
+                var renderingImage = UIHelper.LoadImageAppliedOrientation(pickedImagePath);
+                var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+                SelectedFile = renderingImage;
+                
                 // Clear last detection result
                 ResultCollection.Clear();
                 DetectedFaces.Clear();
                 DetectedResultsInText = string.Format("Detecting...");
 
-                MainWindow.Log("Request: Detecting {0}", SelectedFile);
+                MainWindow.Log("Request: Detecting {0}", pickedImagePath);
                 var sw = Stopwatch.StartNew();
 
                 // Call detection REST API
-                using (var fileStream = File.OpenRead(SelectedFile))
+                using (var fStream = File.OpenRead(pickedImagePath))
                 {
                     try
                     {
@@ -227,8 +230,8 @@ namespace Microsoft.CognitiveServices.Face.Controls
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
                         var faceServiceClient = new FaceServiceClient(subscriptionKey);
-                        CognitiveServices.Face.Contract.Face[] faces = await faceServiceClient.DetectAsync(fileStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair, FaceAttributeType.Emotion });
-                        MainWindow.Log("Response: Success. Detected {0} face(s) in {1}", faces.Length, SelectedFile);
+                        CognitiveServices.Face.Contract.Face[] faces = await faceServiceClient.DetectAsync(fStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair, FaceAttributeType.Emotion, FaceAttributeType.Hair, FaceAttributeType.Makeup, FaceAttributeType.Occlusion, FaceAttributeType.Accessories, FaceAttributeType.Noise, FaceAttributeType.Exposure, FaceAttributeType.Blur });
+                        MainWindow.Log("Response: Success. Detected {0} face(s) in {1}", faces.Length, pickedImagePath);
 
                         DetectedResultsInText = string.Format("{0} face(s) has been detected", faces.Length);
 
@@ -236,7 +239,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                         {
                             DetectedFaces.Add(new Face()
                             {
-                                ImagePath = SelectedFile,
+                                ImageFile = renderingImage,
                                 Left = face.FaceRectangle.Left,
                                 Top = face.FaceRectangle.Top,
                                 Width = face.FaceRectangle.Width,
@@ -245,9 +248,16 @@ namespace Microsoft.CognitiveServices.Face.Controls
                                 Gender = face.FaceAttributes.Gender,
                                 Age = string.Format("{0:#} years old", face.FaceAttributes.Age),
                                 Glasses = face.FaceAttributes.Glasses.ToString(),
-                                FacialHair = string.Format("Facial Hair: {0}", face.FaceAttributes.FacialHair.Moustache + face.FaceAttributes.FacialHair.Beard+face.FaceAttributes.FacialHair.Sideburns > 0 ? "Yes":"No"),
+                                FacialHair = string.Format("Facial Hair: {0}", face.FaceAttributes.FacialHair.Moustache + face.FaceAttributes.FacialHair.Beard + face.FaceAttributes.FacialHair.Sideburns > 0 ? "Yes" : "No"),
                                 HeadPose = string.Format("Pitch: {0}, Roll: {1}, Yaw: {2}", Math.Round(face.FaceAttributes.HeadPose.Pitch, 2), Math.Round(face.FaceAttributes.HeadPose.Roll, 2), Math.Round(face.FaceAttributes.HeadPose.Yaw, 2)),
-                                Emotion = $"{GetEmotion(face.FaceAttributes.Emotion)}"
+                                Emotion = $"{GetEmotion(face.FaceAttributes.Emotion)}",
+                                Occlusion = string.Format("Occluded: {0}", ((face.FaceAttributes.Occlusion.EyeOccluded || face.FaceAttributes.Occlusion.ForeheadOccluded || face.FaceAttributes.Occlusion.MouthOccluded) ? "Yes" : "No")),
+                                Accessories = $"{GetAccessories(face.FaceAttributes.Accessories)}",
+                                Blur = string.Format("Blur: {0}", face.FaceAttributes.Blur.BlurLevel.ToString()),
+                                Exposure = string.Format("{0}", face.FaceAttributes.Exposure.ExposureLevel.ToString()),
+                                Noise = string.Format("Noise: {0}", face.FaceAttributes.Noise.NoiseLevel.ToString()),
+                                Makeup = string.Format("Makeup: {0}", ((face.FaceAttributes.Makeup.EyeMakeup || face.FaceAttributes.Makeup.LipMakeup) ? "Yes" : "No")),
+                                Hair = string.Format("Hair: {0}", GetHair(face.FaceAttributes.Hair)),
                             });
                         }
 
@@ -264,8 +274,52 @@ namespace Microsoft.CognitiveServices.Face.Controls
                         return;
                     }
                     GC.Collect();
-                }
+                }   
             }
+        }
+
+        private string GetHair(Contract.Hair hair)
+        {
+            if (hair.HairColor.Length == 0)
+            {
+                if (hair.Invisible)
+                    return "Invisible";
+                else
+                    return "Bald";
+            }
+            else
+            {
+                Contract.ColorType returnColor = Contract.ColorType.Unknown;
+                float maxConfidence = 0.0f;
+
+                for (int i = 0; i < hair.HairColor.Length; ++i)
+                {
+                    if (hair.HairColor[i].Confidence > maxConfidence)
+                    {
+                        maxConfidence = (float)hair.HairColor[i].Confidence;
+                        returnColor = hair.HairColor[i].Color;
+                    }
+                }
+
+                return returnColor.ToString();
+            }
+        }
+
+        private string GetAccessories(Contract.Accessory[] accessories)
+        {
+            if (accessories.Length == 0)
+            {
+                return "NoAccessories";
+            }
+
+            string accessoriesType = string.Empty;
+
+            for (int i = 0; i < accessories.Length; ++i)
+            {
+                accessoriesType = accessoriesType + accessories[i].Type.ToString() + " ";
+            }
+
+            return "Accessories: "+ accessoriesType;
         }
 
         private string GetEmotion(Microsoft.ProjectOxford.Common.Contract.EmotionScores emotion)

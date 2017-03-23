@@ -279,8 +279,9 @@ namespace Microsoft.CognitiveServices.Face.Controls
 
                 // User already picked one image
                 var pickedImagePath = dlg.FileName;
-                var imageInfo = UIHelper.GetImageInfoForRendering(pickedImagePath);
-                LeftImageDisplay.Source = new BitmapImage(new Uri(pickedImagePath));
+                var renderingImage = UIHelper.LoadImageAppliedOrientation(pickedImagePath);
+                var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+                LeftImageDisplay.Source = renderingImage;
 
                 // Clear last time detection results
                 LeftResultCollection.Clear();
@@ -321,7 +322,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                         MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
                         return;
                     }
-                }
+                }                  
             }
             GC.Collect();
         }
@@ -345,8 +346,9 @@ namespace Microsoft.CognitiveServices.Face.Controls
 
                 // User already picked one image
                 var pickedImagePath = dlg.FileName;
-                var imageInfo = UIHelper.GetImageInfoForRendering(pickedImagePath);
-                RightImageDisplay.Source = new BitmapImage(new Uri(pickedImagePath));
+                var renderingImage = UIHelper.LoadImageAppliedOrientation(pickedImagePath);
+                var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+                RightImageDisplay.Source = renderingImage;
 
                 // Clear last time detection results
                 RightResultCollection.Clear();
@@ -552,7 +554,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                         async (obj) =>
                         {
                             var imgPath = obj as string;
-
+                            
                             using (var fStream = File.OpenRead(imgPath))
                             {
                                 try
@@ -586,7 +588,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                                     // You may handle these exceptions by check the Error.Error.Code and Error.Message property for ClientException object
                                     return new Tuple<string, ClientContract.AddPersistedFaceResult>(imgPath, null);
                                 }
-                            }
+                            }                                
                         },
                         img).Unwrap().ContinueWith((detectTask) =>
                         {
@@ -661,8 +663,9 @@ namespace Microsoft.CognitiveServices.Face.Controls
 
                 // User already picked one image
                 var pickedImagePath = dlg.FileName;
-                var imageInfo = UIHelper.GetImageInfoForRendering(pickedImagePath);
-                RightImageDisplay2.Source = new BitmapImage(new Uri(pickedImagePath));
+                var renderingImage = UIHelper.LoadImageAppliedOrientation(pickedImagePath);
+                var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+                RightImageDisplay2.Source = renderingImage;
 
                 // Clear last time detection results
                 RightFaceResultCollection.Clear();
@@ -705,7 +708,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
 
                         return;
                     }
-                }
+                }                    
             }
             GC.Collect();
         }
