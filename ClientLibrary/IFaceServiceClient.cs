@@ -392,13 +392,22 @@ namespace Microsoft.CognitiveServices.Face
         Task<TrainingStatus> GetPersonGroupTrainingStatusAsync(string personGroupId);
 
         /// <summary>
-        /// Gets all persons inside a person group asynchronously.
+        /// Gets 1000 persons inside a person group asynchronously.
         /// </summary>
         /// <param name="personGroupId">The person group id.</param>
         /// <returns>
         /// The person entity array.
         /// </returns>
+        [Obsolete("use ListPersonsAsync instead")]
         Task<Person[]> GetPersonsAsync(string personGroupId);
+
+        /// <summary>
+        /// Asynchronously list the top persons whose Id is larger than "start".
+        /// </summary>
+        /// <param name="start">the start point string in listing persons</param>
+        /// <param name="top">the number of persons to list</param>
+        /// <returns>Person entity array.</returns>
+        Task<Person[]> ListPersonsAsync(string personGroupId, string start = "", int top = 1000);
 
         /// <summary>
         /// Groups the face asynchronously.
