@@ -436,8 +436,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                     tasks.Add(Task.Factory.StartNew(
                         async (obj) =>
                         {
-                            var imgPath = obj as string;
-                            
+                            var imgPath = obj as string;                            
                             // Call detection
                             using (var fStream = File.OpenRead(imgPath))
                             {

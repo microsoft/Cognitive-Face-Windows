@@ -178,8 +178,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                     tasks.Add(Task.Factory.StartNew(
                         async (obj) =>
                         {
-                            var imgPath = obj as string;
-                            
+                            var imgPath = obj as string;                            
                             // Detect faces in image
                             using (var fStream = File.OpenRead(imgPath))
                             {
@@ -200,7 +199,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                                     // You may handle these exceptions by check the Error.Error.Code and Error.Message property for ClientException object
                                     return new Tuple<string, ClientContract.Face[]>(imgPath, null);
                                 }
-                            }                        
+                            }
                         },
                         img).Unwrap().ContinueWith((detectTask) =>
                         {
