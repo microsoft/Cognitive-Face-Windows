@@ -581,8 +581,8 @@ namespace Microsoft.CognitiveServices.Face
         /// List the top persons whose Id is larger than "start" inside a person group asynchronously.
         /// </summary>
         /// <param name="personGroupId">The person group id.</param>
-        /// <param name="start">person Id bar. List the persons whose Id is larger than "start".</param>
-        /// <param name="top">the number of persons to list.</param>>
+        /// <param name="start">Person Id bar. List the persons whose Id is larger than "start".</param>
+        /// <param name="top">The number of persons to list.</param>>
         /// <returns>
         /// The person entity array.
         /// </returns>
@@ -598,6 +598,19 @@ namespace Microsoft.CognitiveServices.Face
                 top.ToString(CultureInfo.InvariantCulture));
 
             return await this.SendRequestAsync<object, Person[]>(HttpMethod.Get, requestUrl, null);
+        }
+
+        /// <summary>
+        /// List the first top persons inside a person group asynchronously.
+        /// </summary>
+        /// <param name="personGroupId">The person group id.</param>
+        /// <param name="top">The number of persons to list.</param>>
+        /// <returns>
+        /// The person entity array.
+        /// </returns>
+        public async Task<Person[]> ListPersonsAsync(string personGroupId, int top)
+        {
+            return await ListPersonsAsync(personGroupId, "", top);
         }
 
         /// <summary>
