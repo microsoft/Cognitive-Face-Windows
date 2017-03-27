@@ -314,11 +314,12 @@ namespace Microsoft.CognitiveServices.Face.Controls
 
             string accessoriesType = string.Empty;
 
-            for (int i = 0; i < accessories.Length; ++i)
+            for (int i = 0; i < accessories.Length - 1; ++i)
             {
                 accessoriesType = accessoriesType + accessories[i].Type.ToString() + " ";
             }
 
+            accessoriesType = accessoriesType + accessories[accessories.Length - 1].Type.ToString();
             return "Accessories: "+ accessoriesType;
         }
 
