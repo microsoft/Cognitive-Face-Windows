@@ -401,7 +401,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         await Task.Delay(1000);
                         var status = await faceServiceClient.GetPersonGroupTrainingStatusAsync(GroupName);
                         MainWindow.Log("Response: {0}. Group \"{1}\" training process is {2}", "Success", GroupName, status.Status);
-                        if (status.Status != Microsoft.ProjectOxford.Face.Contract.Status.Running)
+                        if (status.Status != Contract.Status.Running)
                         {
                             break;
                         }
