@@ -597,7 +597,7 @@ namespace Microsoft.ProjectOxford.Face
 
             return await this.SendRequestAsync<object, Person[]>(HttpMethod.Get, requestUrl, null);
         }
-        
+
         /// <summary>
         /// Adds a face to a person asynchronously.
         /// </summary>
