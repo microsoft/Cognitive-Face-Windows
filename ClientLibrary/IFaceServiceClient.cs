@@ -36,10 +36,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.ProjectOxford.Face.Contract;
 
-using Microsoft.CognitiveServices.Face.Contract;
-
-namespace Microsoft.CognitiveServices.Face
+namespace Microsoft.ProjectOxford.Face
 {
     #region Enumerations
 
@@ -245,7 +244,7 @@ namespace Microsoft.CognitiveServices.Face
         /// <param name="returnFaceLandmarks">If set to <c>true</c> [return face landmarks].</param>
         /// <param name="returnFaceAttributes">Return face attributes.</param> 
         /// <returns>The detected faces.</returns>
-        Task<Microsoft.CognitiveServices.Face.Contract.Face[]> DetectAsync(string imageUrl, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null);
+        Task<Contract.Face[]> DetectAsync(string imageUrl, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null);
 
         /// <summary>
         /// Detects an image asynchronously.
@@ -255,7 +254,7 @@ namespace Microsoft.CognitiveServices.Face
         /// <param name="returnFaceLandmarks">If set to <c>true</c> [return face landmarks].</param>
         /// <param name="returnFaceAttributes">Return face attributes.</param>  
         /// <returns>The detected faces.</returns>
-        Task<Microsoft.CognitiveServices.Face.Contract.Face[]> DetectAsync(Stream imageStream, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null);
+        Task<Contract.Face[]> DetectAsync(Stream imageStream, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null);
 
         /// <summary>
         /// Finds the similar faces asynchronously.

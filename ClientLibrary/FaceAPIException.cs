@@ -34,7 +34,7 @@
 using System;
 using System.Net;
 
-namespace Microsoft.CognitiveServices.Face
+namespace Microsoft.ProjectOxford.Face
 {
     /// <summary>
     /// Represents client error with detailed error message and error code
