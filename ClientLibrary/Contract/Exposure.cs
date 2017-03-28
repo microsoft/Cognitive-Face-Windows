@@ -35,6 +35,7 @@ namespace Microsoft.CognitiveServices.Face.Contract
 {
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
+
     /// <summary>
     /// Exposure level
     /// </summary>

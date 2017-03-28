@@ -59,9 +59,9 @@ namespace Microsoft.CognitiveServices.Face
         Gender,
 
         /// <summary>
-        /// Analyses facial hair
+        /// Analyses head pose
         /// </summary>
-        FacialHair,
+        HeadPose,
 
         /// <summary>
         /// Analyses whether is smiling
@@ -69,9 +69,9 @@ namespace Microsoft.CognitiveServices.Face
         Smile,
 
         /// <summary>
-        /// Analyses head pose
+        /// Analyses facial hair
         /// </summary>
-        HeadPose,
+        FacialHair,
 
         /// <summary>
         /// Analyses glasses type
@@ -104,9 +104,9 @@ namespace Microsoft.CognitiveServices.Face
         Accessories,
 
         /// <summary>
-        /// Analyses noise
+        /// Analyses blur
         /// </summary>
-        Noise,
+        Blur,
 
         /// <summary>
         /// Analyses exposure
@@ -114,9 +114,9 @@ namespace Microsoft.CognitiveServices.Face
         Exposure,
 
         /// <summary>
-        /// Analyses blur
+        /// Analyses noise
         /// </summary>
-        Blur
+        Noise
     }
 
     /// <summary>
@@ -370,7 +370,7 @@ namespace Microsoft.CognitiveServices.Face
         Task<PersonGroup> GetPersonGroupAsync(string personGroupId);
 
         /// <summary>
-        /// Asynchronously list the first 1000 person groups.
+        /// Asynchronously list the person groups.
         /// </summary>
         /// <returns>Person group entity array.</returns>
         [Obsolete("use ListPersonGroupsAsync instead")]
@@ -392,7 +392,7 @@ namespace Microsoft.CognitiveServices.Face
         Task<TrainingStatus> GetPersonGroupTrainingStatusAsync(string personGroupId);
 
         /// <summary>
-        /// Gets 1000 persons inside a person group asynchronously.
+        /// Gets persons inside a person group asynchronously.
         /// </summary>
         /// <param name="personGroupId">The person group id.</param>
         /// <returns>

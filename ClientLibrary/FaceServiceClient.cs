@@ -444,7 +444,7 @@ namespace Microsoft.CognitiveServices.Face
         }
 
         /// <summary>
-        /// Gets all person groups asynchronously.
+        /// Gets person groups asynchronously.
         /// </summary>
         /// <returns>Person group entity array.</returns>
         [Obsolete("use ListPersonGroupsAsync instead")]
@@ -565,7 +565,7 @@ namespace Microsoft.CognitiveServices.Face
         }
 
         /// <summary>
-        /// Gets all persons inside a person group asynchronously.
+        /// Gets persons inside a person group asynchronously.
         /// </summary>
         /// <param name="personGroupId">The person group id.</param>
         /// <returns>
