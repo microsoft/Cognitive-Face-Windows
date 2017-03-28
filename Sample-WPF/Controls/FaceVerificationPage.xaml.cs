@@ -46,7 +46,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.ProjectOxford.Face;
 using ClientContract = Microsoft.ProjectOxford.Face.Contract;
 
 namespace Microsoft.ProjectOxford.Face.Controls

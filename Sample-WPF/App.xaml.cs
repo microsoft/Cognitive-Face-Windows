@@ -32,7 +32,6 @@
 //
 
 using System.Windows;
-using Microsoft.ProjectOxford.Face;
 
 namespace Microsoft.ProjectOxford.Face
 {
