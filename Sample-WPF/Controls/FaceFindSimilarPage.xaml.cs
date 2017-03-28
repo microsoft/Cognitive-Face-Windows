@@ -45,10 +45,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Microsoft.CognitiveServices.Face;
-using ClientContract = Microsoft.CognitiveServices.Face.Contract;
+using ClientContract = Microsoft.ProjectOxford.Face.Contract;
 
-namespace Microsoft.CognitiveServices.Face.Controls
+namespace Microsoft.ProjectOxford.Face.Controls
 {
     /// <summary>
     /// Interaction logic for FaceFindSimilar.xaml

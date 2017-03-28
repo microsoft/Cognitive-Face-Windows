@@ -33,7 +33,7 @@
 
 using System;
 
-namespace Microsoft.CognitiveServices.Face.Contract
+namespace Microsoft.ProjectOxford.Face.Contract
 {
     /// <summary>
     /// The class for similar persisted face.

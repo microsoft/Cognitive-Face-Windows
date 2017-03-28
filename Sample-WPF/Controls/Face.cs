@@ -35,7 +35,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 
-namespace Microsoft.CognitiveServices.Face.Controls
+namespace Microsoft.ProjectOxford.Face.Controls
 {
     /// <summary>
     /// Face view model

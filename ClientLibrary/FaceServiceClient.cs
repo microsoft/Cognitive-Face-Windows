@@ -40,13 +40,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-
-using Microsoft.CognitiveServices.Face.Contract;
-
+using Microsoft.ProjectOxford.Face.Contract;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Microsoft.CognitiveServices.Face
+namespace Microsoft.ProjectOxford.Face
 {
     /// <summary>
     /// The face service client proxy implementation.
@@ -237,7 +235,7 @@ namespace Microsoft.CognitiveServices.Face
         /// <param name="returnFaceLandmarks">If set to <c>true</c> [return face landmarks].</param>
         /// <param name="returnFaceAttributes">Face attributes need to be returned.</param> 
         /// <returns>The detected faces.</returns>
-        public async Task<Microsoft.CognitiveServices.Face.Contract.Face[]> DetectAsync(string imageUrl, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null)
+        public async Task<Microsoft.ProjectOxford.Face.Contract.Face[]> DetectAsync(string imageUrl, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null)
         {
             if (returnFaceAttributes != null)
             {
@@ -249,7 +247,7 @@ namespace Microsoft.CognitiveServices.Face
                     returnFaceLandmarks,
                     GetAttributeString(returnFaceAttributes));
 
-                return await this.SendRequestAsync<object, Microsoft.CognitiveServices.Face.Contract.Face[]>(HttpMethod.Post, requestUrl, new { url = imageUrl });
+                return await this.SendRequestAsync<object, Microsoft.ProjectOxford.Face.Contract.Face[]>(HttpMethod.Post, requestUrl, new { url = imageUrl });
             }
             else
             {
@@ -260,7 +258,7 @@ namespace Microsoft.CognitiveServices.Face
                     returnFaceId,
                     returnFaceLandmarks);
 
-                return await this.SendRequestAsync<object, Microsoft.CognitiveServices.Face.Contract.Face[]>(HttpMethod.Post, requestUrl, new { url = imageUrl });
+                return await this.SendRequestAsync<object, Microsoft.ProjectOxford.Face.Contract.Face[]>(HttpMethod.Post, requestUrl, new { url = imageUrl });
             }
         }
 
@@ -272,7 +270,7 @@ namespace Microsoft.CognitiveServices.Face
         /// <param name="returnFaceLandmarks">If set to <c>true</c> [return face landmarks].</param>
         /// <param name="returnFaceAttributes">Face attributes need to be returned.</param> 
         /// <returns>The detected faces.</returns>
-        public async Task<Microsoft.CognitiveServices.Face.Contract.Face[]> DetectAsync(Stream imageStream, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null)
+        public async Task<Microsoft.ProjectOxford.Face.Contract.Face[]> DetectAsync(Stream imageStream, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null)
         {
             if (returnFaceAttributes != null)
             {
@@ -284,7 +282,7 @@ namespace Microsoft.CognitiveServices.Face
                     returnFaceLandmarks,
                     GetAttributeString(returnFaceAttributes));
 
-                return await this.SendRequestAsync<Stream, Microsoft.CognitiveServices.Face.Contract.Face[]>(HttpMethod.Post, requestUrl, imageStream);
+                return await this.SendRequestAsync<Stream, Microsoft.ProjectOxford.Face.Contract.Face[]>(HttpMethod.Post, requestUrl, imageStream);
             }
             else
             {
@@ -295,7 +293,7 @@ namespace Microsoft.CognitiveServices.Face
                     returnFaceId,
                     returnFaceLandmarks);
 
-                return await this.SendRequestAsync<Stream, Microsoft.CognitiveServices.Face.Contract.Face[]>(HttpMethod.Post, requestUrl, imageStream);
+                return await this.SendRequestAsync<Stream, Microsoft.ProjectOxford.Face.Contract.Face[]>(HttpMethod.Post, requestUrl, imageStream);
             }
         }
 

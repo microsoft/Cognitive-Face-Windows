@@ -40,7 +40,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Microsoft.CognitiveServices.Face.Controls
+namespace Microsoft.ProjectOxford.Face.Controls
 {
     /// <summary>
     /// UI helper functions
@@ -105,7 +105,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
         /// <param name="maxSize">Image rendering size</param>
         /// <param name="imageInfo">Image width and height</param>
         /// <returns>Face structure for rendering</returns>
-        public static IEnumerable<Face> CalculateFaceRectangleForRendering(IEnumerable<Microsoft.CognitiveServices.Face.Contract.Face> faces, int maxSize, Tuple<int, int> imageInfo)
+        public static IEnumerable<Face> CalculateFaceRectangleForRendering(IEnumerable<Microsoft.ProjectOxford.Face.Contract.Face> faces, int maxSize, Tuple<int, int> imageInfo)
         {
             var imageWidth = imageInfo.Item1;
             var imageHeight = imageInfo.Item2;
@@ -163,7 +163,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
         /// <param name="collections">UI binding collection</param>
         /// <param name="imagePath">Original image path, used for rendering face region</param>
         /// <param name="face">Face structure returned from service</param>
-        public static void UpdateFace(ObservableCollection<Face> collections, string imagePath, Microsoft.CognitiveServices.Face.Contract.AddPersistedFaceResult face)
+        public static void UpdateFace(ObservableCollection<Face> collections, string imagePath, Microsoft.ProjectOxford.Face.Contract.AddPersistedFaceResult face)
         {
             var renderingImage = LoadImageAppliedOrientation(imagePath);
             collections.Add(new Face()
@@ -179,7 +179,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
         /// <param name="collections">UI binding collection</param>
         /// <param name="imagePath">Original image path, used for rendering face region</param>
         /// <param name="face">Face structure returned from service</param>
-        public static void UpdateFace(ObservableCollection<Face> collections, string imagePath, Microsoft.CognitiveServices.Face.Contract.Face face)
+        public static void UpdateFace(ObservableCollection<Face> collections, string imagePath, Microsoft.ProjectOxford.Face.Contract.Face face)
         {
             var renderingImage = LoadImageAppliedOrientation(imagePath);
             collections.Add(new Face()

@@ -34,7 +34,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Microsoft.CognitiveServices.Face.Contract
+namespace Microsoft.ProjectOxford.Face.Contract
 {
     /// <summary>
     /// The face attributes class that holds Age/Gender/Head Pose/Smile/Facial Hair information.

@@ -46,10 +46,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.CognitiveServices.Face;
-using ClientContract = Microsoft.CognitiveServices.Face.Contract;
 
-namespace Microsoft.CognitiveServices.Face.Controls
+using ClientContract = Microsoft.ProjectOxford.Face.Contract;
+
+namespace Microsoft.ProjectOxford.Face.Controls
 {
     /// <summary>
     /// Interaction logic for FaceVerification.xaml

@@ -31,7 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace Microsoft.CognitiveServices.Face.Contract
+namespace Microsoft.ProjectOxford.Face.Contract
 {
     /// <summary>
     /// The head pose entity.

@@ -40,7 +40,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Microsoft.CognitiveServices.Face.Controls
+namespace Microsoft.ProjectOxford.Face.Controls
 {
     /// <summary>
     /// Interaction logic for FaceDetectionPage.xaml

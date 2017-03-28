@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>Microsoft.CognitiveServices.Face</id>
+    <id>Microsoft.ProjectOxford.Face</id>
     <title>Microsoft Cognitive Services Face API Client Library</title>
     <version>$version$</version>
     <authors>Microsoft</authors>
