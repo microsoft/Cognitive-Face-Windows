@@ -37,7 +37,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -45,10 +44,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.CognitiveServices.Face;
-using ClientContract = Microsoft.CognitiveServices.Face.Contract;
 
-namespace Microsoft.CognitiveServices.Face.Controls
+using ClientContract = Microsoft.ProjectOxford.Face.Contract;
+
+namespace Microsoft.ProjectOxford.Face.Controls
 {
     /// <summary>
     /// Interaction logic for FaceDetection.xaml
@@ -402,7 +401,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                         await Task.Delay(1000);
                         var status = await faceServiceClient.GetPersonGroupTrainingStatusAsync(GroupName);
                         MainWindow.Log("Response: {0}. Group \"{1}\" training process is {2}", "Success", GroupName, status.Status);
-                        if (status.Status != Microsoft.CognitiveServices.Face.Contract.Status.Running)
+                        if (status.Status != Contract.Status.Running)
                         {
                             break;
                         }
