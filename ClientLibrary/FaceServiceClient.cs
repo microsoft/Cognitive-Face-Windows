@@ -609,20 +609,7 @@ namespace Microsoft.CognitiveServices.Face
 
             return await this.SendRequestAsync<object, Person[]>(HttpMethod.Get, requestUrl, null);
         }
-
-        /// <summary>
-        /// List the first top persons inside a person group asynchronously.
-        /// </summary>
-        /// <param name="personGroupId">The person group id.</param>
-        /// <param name="top">The number of persons to list.</param>>
-        /// <returns>
-        /// The person entity array.
-        /// </returns>
-        public async Task<Person[]> ListPersonsAsync(string personGroupId, int top)
-        {
-            return await ListPersonsAsync(personGroupId, "", top);
-        }
-
+        
         /// <summary>
         /// Adds a face to a person asynchronously.
         /// </summary>
