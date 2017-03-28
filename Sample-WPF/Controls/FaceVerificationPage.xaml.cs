@@ -322,7 +322,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                         MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
                         return;
                     }
-                }                  
+                }
             }
             GC.Collect();
         }
@@ -554,7 +554,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                         async (obj) =>
                         {
                             var imgPath = obj as string;
-                            
+
                             using (var fStream = File.OpenRead(imgPath))
                             {
                                 try
@@ -588,7 +588,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                                     // You may handle these exceptions by check the Error.Error.Code and Error.Message property for ClientException object
                                     return new Tuple<string, ClientContract.AddPersistedFaceResult>(imgPath, null);
                                 }
-                            }                                
+                            }
                         },
                         img).Unwrap().ContinueWith((detectTask) =>
                         {
@@ -708,7 +708,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
 
                         return;
                     }
-                }                    
+                }
             }
             GC.Collect();
         }
