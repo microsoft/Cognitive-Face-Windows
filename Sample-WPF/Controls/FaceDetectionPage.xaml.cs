@@ -245,19 +245,19 @@ namespace Microsoft.CognitiveServices.Face.Controls
                                 Width = face.FaceRectangle.Width,
                                 Height = face.FaceRectangle.Height,
                                 FaceId = face.FaceId.ToString(),
-                                Gender = face.FaceAttributes.Gender,
                                 Age = string.Format("{0:#} years old", face.FaceAttributes.Age),
-                                Glasses = face.FaceAttributes.Glasses.ToString(),
+                                Gender = face.FaceAttributes.Gender,
+                                HeadPose = string.Format("Pitch: {0}, Roll: {1}, Yaw: {2}", Math.Round(face.FaceAttributes.HeadPose.Pitch, 2), Math.Round(face.FaceAttributes.HeadPose.Roll, 2), Math.Round(face.FaceAttributes.HeadPose.Yaw, 2)),                                
                                 FacialHair = string.Format("Facial Hair: {0}", face.FaceAttributes.FacialHair.Moustache + face.FaceAttributes.FacialHair.Beard + face.FaceAttributes.FacialHair.Sideburns > 0 ? "Yes" : "No"),
-                                HeadPose = string.Format("Pitch: {0}, Roll: {1}, Yaw: {2}", Math.Round(face.FaceAttributes.HeadPose.Pitch, 2), Math.Round(face.FaceAttributes.HeadPose.Roll, 2), Math.Round(face.FaceAttributes.HeadPose.Yaw, 2)),
+                                Glasses = face.FaceAttributes.Glasses.ToString(),
                                 Emotion = $"{GetEmotion(face.FaceAttributes.Emotion)}",
+                                Hair = string.Format("Hair: {0}", GetHair(face.FaceAttributes.Hair)),
+                                Makeup = string.Format("Makeup: {0}", ((face.FaceAttributes.Makeup.EyeMakeup || face.FaceAttributes.Makeup.LipMakeup) ? "Yes" : "No")),
                                 Occlusion = string.Format("Occluded: {0}", ((face.FaceAttributes.Occlusion.EyeOccluded || face.FaceAttributes.Occlusion.ForeheadOccluded || face.FaceAttributes.Occlusion.MouthOccluded) ? "Yes" : "No")),
                                 Accessories = $"{GetAccessories(face.FaceAttributes.Accessories)}",
                                 Blur = string.Format("Blur: {0}", face.FaceAttributes.Blur.BlurLevel.ToString()),
                                 Exposure = string.Format("{0}", face.FaceAttributes.Exposure.ExposureLevel.ToString()),
-                                Noise = string.Format("Noise: {0}", face.FaceAttributes.Noise.NoiseLevel.ToString()),
-                                Makeup = string.Format("Makeup: {0}", ((face.FaceAttributes.Makeup.EyeMakeup || face.FaceAttributes.Makeup.LipMakeup) ? "Yes" : "No")),
-                                Hair = string.Format("Hair: {0}", GetHair(face.FaceAttributes.Hair)),
+                                Noise = string.Format("Noise: {0}", face.FaceAttributes.Noise.NoiseLevel.ToString()),                                                               
                             });
                         }
 
@@ -290,13 +290,13 @@ namespace Microsoft.CognitiveServices.Face.Controls
             else
             {
                 Contract.ColorType returnColor = Contract.ColorType.Unknown;
-                float maxConfidence = 0.0f;
+                double maxConfidence = 0.0f;
 
                 for (int i = 0; i < hair.HairColor.Length; ++i)
                 {
                     if (hair.HairColor[i].Confidence > maxConfidence)
                     {
-                        maxConfidence = (float)hair.HairColor[i].Confidence;
+                        maxConfidence = hair.HairColor[i].Confidence;
                         returnColor = hair.HairColor[i].Color;
                     }
                 }
@@ -312,15 +312,14 @@ namespace Microsoft.CognitiveServices.Face.Controls
                 return "NoAccessories";
             }
 
-            string accessoriesType = string.Empty;
-
-            for (int i = 0; i < accessories.Length - 1; ++i)
+            string []accessoryArray = new string[accessories.Length];
+            
+            for (int i = 0; i < accessories.Length; ++i)
             {
-                accessoriesType = accessoriesType + accessories[i].Type.ToString() + " ";
+                accessoryArray[i] = accessories[i].Type.ToString();
             }
 
-            accessoriesType = accessoriesType + accessories[accessories.Length - 1].Type.ToString();
-            return "Accessories: "+ accessoriesType;
+            return "Accessories: "+ String.Join(",", accessoryArray);
         }
 
         private string GetEmotion(Microsoft.ProjectOxford.Common.Contract.EmotionScores emotion)
