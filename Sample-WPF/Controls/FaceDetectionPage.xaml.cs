@@ -204,7 +204,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
             dlg.DefaultExt = ".jpg";
             dlg.Filter = "Image files (*.jpg, *.png, *.bmp, *.gif) | *.jpg; *.png; *.bmp; *.gif";
             var result = dlg.ShowDialog();
-            
+                        
             if (result.HasValue && result.Value)
             {
                 // User picked one image
