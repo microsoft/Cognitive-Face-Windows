@@ -244,7 +244,7 @@ namespace Microsoft.ProjectOxford.Face
         /// <param name="returnFaceLandmarks">If set to <c>true</c> [return face landmarks].</param>
         /// <param name="returnFaceAttributes">Return face attributes.</param> 
         /// <returns>The detected faces.</returns>
-        Task<Contract.Face[]> DetectAsync(string imageUrl, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null);
+        Task<Microsoft.ProjectOxford.Face.Contract.Face[]> DetectAsync(string imageUrl, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null);
 
         /// <summary>
         /// Detects an image asynchronously.
@@ -254,7 +254,7 @@ namespace Microsoft.ProjectOxford.Face
         /// <param name="returnFaceLandmarks">If set to <c>true</c> [return face landmarks].</param>
         /// <param name="returnFaceAttributes">Return face attributes.</param>  
         /// <returns>The detected faces.</returns>
-        Task<Contract.Face[]> DetectAsync(Stream imageStream, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null);
+        Task<Microsoft.ProjectOxford.Face.Contract.Face[]> DetectAsync(Stream imageStream, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null);
 
         /// <summary>
         /// Finds the similar faces asynchronously.
