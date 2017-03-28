@@ -38,8 +38,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.ProjectOxford.Face;
 
-namespace Microsoft.CognitiveServices.Face.Controls
+namespace Microsoft.ProjectOxford.Face.Controls
 {
     /// <summary>
     /// Interaction logic for FaceDetectionPage.xaml
@@ -227,7 +228,7 @@ namespace Microsoft.CognitiveServices.Face.Controls
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
 
                         var faceServiceClient = new FaceServiceClient(subscriptionKey);
-                        CognitiveServices.Face.Contract.Face[] faces = await faceServiceClient.DetectAsync(fileStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair, FaceAttributeType.Emotion });
+                        Microsoft.ProjectOxford.Face.Contract.Face[] faces = await faceServiceClient.DetectAsync(fileStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair, FaceAttributeType.Emotion });
                         MainWindow.Log("Response: Success. Detected {0} face(s) in {1}", faces.Length, SelectedFile);
 
                         DetectedResultsInText = string.Format("{0} face(s) has been detected", faces.Length);

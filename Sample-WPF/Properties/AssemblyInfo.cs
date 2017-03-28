@@ -40,8 +40,8 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Microsoft.CognitiveServices.Face")]
-[assembly: AssemblyDescription("Microsoft.CognitiveServices.Face")]
+[assembly: AssemblyTitle("Microsoft.ProjectOxford.Face")]
+[assembly: AssemblyDescription("Microsoft.ProjectOxford.Face")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Microsoft ProjectOxford")]
