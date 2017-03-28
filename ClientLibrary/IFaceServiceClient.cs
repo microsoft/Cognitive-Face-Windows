@@ -385,13 +385,6 @@ namespace Microsoft.CognitiveServices.Face
         Task<PersonGroup[]> ListPersonGroupsAsync(string start = "", int top = 1000);
 
         /// <summary>
-        /// Asynchronously list the first top person groups.
-        /// </summary>
-        /// <param name="top">The number of person groups to list</param>
-        /// <returns>Person group entity array.</returns>
-        Task<PersonGroup[]> ListPersonGroupsAsync(int top);
-
-        /// <summary>
         /// Gets person group training status asynchronously.
         /// </summary>
         /// <param name="personGroupId">The person group id.</param>
