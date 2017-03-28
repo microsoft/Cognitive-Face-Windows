@@ -38,7 +38,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.ProjectOxford.Face;
 
 namespace Microsoft.ProjectOxford.Face.Controls
 {
