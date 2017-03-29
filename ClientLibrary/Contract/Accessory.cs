@@ -66,7 +66,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         #region Properties
 
         /// <summary>
-        /// Get or set AccessoryType
+        /// Indicating the accessory type
         /// </summary>
         public AccessoryType Type
         {
@@ -74,7 +74,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         }
 
         /// <summary>
-        /// Get or set confidence for AccessoryType
+        /// Indicating the confidence for accessory type
         /// </summary>
         public double Confidence
         {

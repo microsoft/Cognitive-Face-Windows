@@ -37,36 +37,36 @@ namespace Microsoft.ProjectOxford.Face.Contract
     using Newtonsoft.Json.Converters;
 
     /// <summary>
-    /// Blur level
+    /// Definition of blur level
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum BlurLevel
     {
         /// <summary>
-        /// Low level
+        /// Low blur level indicating a clear face image
         /// </summary>
         Low,
 
         /// <summary>
-        /// Medium level
+        /// Medium blur level indicating a slightly blurry face image
         /// </summary>
         Medium,
 
         /// <summary>
-        /// High level
+        /// High blur level indicating a extremely blurry face image
         /// </summary>
         High
     }
 
     /// <summary>
-    /// Face BLur class contains blur information
+    /// Face Blur class contains blur information
     /// </summary>
     public class Blur
     {
         #region Properties
 
         /// <summary>
-        /// Get or set BlurLevel
+        /// Indicating the blur level of face image
         /// </summary>
         public BlurLevel BlurLevel
         {
@@ -74,7 +74,10 @@ namespace Microsoft.ProjectOxford.Face.Contract
         }
 
         /// <summary>
-        /// Get or set value for Blur
+        /// Blur value is in range [0, 1]. Larger value means the face image is more blurry.
+        /// [0, 0.25) is low blur level.
+        /// [0.25, 0.75) is medium blur level.
+        /// [0.75, 1] is high blur level.
         /// </summary>
         public double Value
         {

@@ -37,23 +37,23 @@ namespace Microsoft.ProjectOxford.Face.Contract
     using Newtonsoft.Json.Converters;
 
     /// <summary>
-    /// Exposure level
+    /// Definition of exposure level
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum ExposureLevel
     {
         /// <summary>
-        /// Good exposure
-        /// </summary>
-        GoodExposure,
-
-        /// <summary>
-        /// Under exposure
+        /// Indicating face image is in under exposure
         /// </summary>
         UnderExposure,
 
         /// <summary>
-        /// Over exposure
+        /// Indicating face image is in good exposure
+        /// </summary>
+        GoodExposure,
+
+        /// <summary>
+        /// Indicating face image is in over exposure
         /// </summary>
         OverExposure
     }
@@ -66,7 +66,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         #region Properties
 
         /// <summary>
-        /// Get or set ExposureLevel
+        /// Indicating exposure level of face image
         /// </summary>
         public ExposureLevel ExposureLevel
         {
@@ -74,7 +74,10 @@ namespace Microsoft.ProjectOxford.Face.Contract
         }
 
         /// <summary>
-        /// Get or set value for Exposure
+        /// Exposure value is in range [0, 1]. Larger value means the face image is more brighter.
+        /// [0, 0.25) is under exposure.
+        /// [0.25, 0.75) is good exposure.
+        /// [0.75, 1] is over exposure.
         /// </summary>
         public double Value
         {

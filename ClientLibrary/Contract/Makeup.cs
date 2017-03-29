@@ -41,7 +41,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         #region Properties
 
         /// <summary>
-        /// Get or set EyeMakeup
+        /// Indicating whether eye has makeup or not
         /// </summary>
         public bool EyeMakeup
         {
@@ -49,7 +49,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         }
 
         /// <summary>
-        /// Get or set LipMakeup
+        /// Indicating whether lip has makeup or not
         /// </summary>
         public bool LipMakeup
         {

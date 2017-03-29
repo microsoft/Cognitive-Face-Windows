@@ -40,7 +40,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
     /// Hair color type
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum ColorType
+    public enum HairColorType
     {
         /// <summary>
         /// unknown
@@ -89,15 +89,15 @@ namespace Microsoft.ProjectOxford.Face.Contract
     public class HairColor
     {
         /// <summary>
-        /// Get or set HairColorType
+        /// Indicating the hair color type
         /// </summary>
-        public ColorType Color
+        public HairColorType Color
         {
             get; set;
         }
 
         /// <summary>
-        /// Get or set Confidence
+        /// Indicating the confidence for hair color type
         /// </summary>
         public double Confidence
         {
@@ -113,7 +113,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         #region Properties
 
         /// <summary>
-        /// Get or set Bald value
+        /// Indicating the confidence of a bald head
         /// </summary>
         public double Bald
         {
@@ -121,7 +121,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         }
 
         /// <summary>
-        /// Get or set hair invisible
+        /// Indicating whether hair is occluded or not
         /// </summary>
         public bool Invisible
         {
@@ -129,7 +129,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         }
 
         /// <summary>
-        /// Get or set HairColor array
+        /// Indicating all possible hair colors with confidences
         /// </summary>
         public HairColor[] HairColor
         {

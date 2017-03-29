@@ -37,23 +37,23 @@ namespace Microsoft.ProjectOxford.Face.Contract
     using Newtonsoft.Json.Converters;
 
     /// <summary>
-    /// Noise level
+    /// Definition of noise level
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum NoiseLevel
     {
         /// <summary>
-        /// Low level
+        /// Low noise level indicating a clear face image
         /// </summary>
         Low,
 
         /// <summary>
-        /// Medium level
+        /// Medium noise level indicating a slightly noisy face image
         /// </summary>
         Medium,
 
         /// <summary>
-        /// High level
+        /// High noise level indicating a extremely noisy face image
         /// </summary>
         High
     }
@@ -66,7 +66,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         #region Properties
 
         /// <summary>
-        /// Get or set NoiseLevel
+        /// Indicating noise level of face image
         /// </summary>
         public NoiseLevel NoiseLevel
         {
@@ -74,7 +74,10 @@ namespace Microsoft.ProjectOxford.Face.Contract
         }
 
         /// <summary>
-        /// Get or set value for Noise
+        /// Noise value is in range [0, 1]. Larger value means the face image is more noisy.
+        /// [0, 0.3) is low noise level.
+        /// [0.3, 0.7) is medium noise level.
+        /// [0.7, 1] is high noise level. 
         /// </summary>
         public double Value
         {

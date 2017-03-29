@@ -34,14 +34,14 @@
 namespace Microsoft.ProjectOxford.Face.Contract
 {
     /// <summary>
-    /// Face Occlusion class contains occclusion information
+    /// Face Occlusion class contains occlusion information
     /// </summary>
     public class Occlusion
     {
         #region Properties
 
         /// <summary>
-        /// Get or set ForeheadOccluded
+        /// Indicating whether forehead is occluded or not
         /// </summary>
         public bool ForeheadOccluded
         {
@@ -49,7 +49,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         }
 
         /// <summary>
-        /// Get or set EyeOccluded
+        /// Indicating whether eye is occluded or not
         /// </summary>
         public bool EyeOccluded
         {
@@ -57,7 +57,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         }
 
         /// <summary>
-        /// Get or set MouthOccluded
+        /// Indicating whether mouth is occluded or not
         /// </summary>
         public bool MouthOccluded
         {
