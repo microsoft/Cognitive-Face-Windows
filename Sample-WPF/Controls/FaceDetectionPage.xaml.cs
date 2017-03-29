@@ -289,7 +289,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             }
             else
             {
-                Contract.ColorType returnColor = Contract.ColorType.Unknown;
+                Contract.HairColorType returnColor = Contract.HairColorType.Unknown;
                 double maxConfidence = 0.0f;
 
                 for (int i = 0; i < hair.HairColor.Length; ++i)
