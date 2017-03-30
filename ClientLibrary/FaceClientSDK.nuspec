@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Microsoft Cognitive Services Face API Client Library</description>
     <summary>Use Face API Client Library to enrich your apps with Microsoft's state-of-the-art cloud-based face algorithms.</summary>
-    <releaseNotes>User-configurable hostname</releaseNotes>
+    <releaseNotes>Support emotion attributes in Face Detection.</releaseNotes>
     <copyright>Copyright (c) 2016</copyright>
     <tags>Face Oxford ProjectOxford Microsoft Cognitive CognitiveServices</tags>
     <dependencies>
