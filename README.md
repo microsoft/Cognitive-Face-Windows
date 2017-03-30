@@ -54,19 +54,8 @@ You can reach out to us anytime with questions and suggestions using our communi
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Updates
-- **8/2016 update for [July 2016 Face API changes](https://www.microsoft.com/cognitive-services/en-us/face-api/documentation/overview#changes)**
+* [Face API Release Notes](https://www.microsoft.com/cognitive-services/en-us/face-api/documentation/ReleaseNotes)
 
- *Client Library* 
- - `VerifyAsync` interface with `faceId`, `personGroupId` and `personId` as paramters.
- - Optional user-specified `confidenceThreshold` paramter in `IdentifyAsync`.
- - `FindSimilarMatchMode` enum declaration and adopted in `FindSimilarAsync`.
- - New `ListPersonGroupsAsync` interface with `start` and `top` as paramters and recommend to use `ListPersonGroupsAsync` instead of `GetPersonGroupsAsync`.
-
- *Sample*
- - `Verfication` demo for face and person authentication.
- - `FindSimilar` demo of `MatchFace` mode. 
- 
- 
 ## License
 All Microsoft Cognitive Services SDKs and samples are licensed with the MIT License. For more details, see
 [LICENSE](</LICENSE.md>).
