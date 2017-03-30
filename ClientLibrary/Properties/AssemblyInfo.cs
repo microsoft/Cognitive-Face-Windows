@@ -37,9 +37,9 @@ using System.Resources;
 [assembly: AssemblyDescription("Microsoft.ProjectOxford.Face")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Microsoft ProjectOxford")]
-[assembly: AssemblyCopyright("Copyright © 2015 Microsoft")]
+[assembly: AssemblyCopyright("Copyright © 2016 Microsoft")]
 [assembly: AssemblyTrademark("Microsoft")]
 [assembly: NeutralResourcesLanguage("en")]
 
-[assembly: AssemblyVersion("1.2.1.1")]
-[assembly: AssemblyFileVersion("1.2.1.1")]
+[assembly: AssemblyVersion("1.2.5")]
+[assembly: AssemblyFileVersion("1.2.5")]
