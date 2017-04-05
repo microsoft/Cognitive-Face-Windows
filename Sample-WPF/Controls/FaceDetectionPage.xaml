@@ -107,7 +107,7 @@
                 </ListView.ItemsPanel>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Margin="-3, 5, 5, 5" Width="285" Height="112">
+                        <Grid Margin="-3, 5, 5, 5" Width="300" Height="144">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="64" />
                                 <ColumnDefinition Width="26" />
@@ -119,9 +119,11 @@
                                 <RowDefinition Height="16" />
                                 <RowDefinition Height="16" />
                                 <RowDefinition Height="16" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="16" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" Width="64" Height="64">
+                            <Image Grid.Column="0" Grid.Row="2" Grid.RowSpan="4" Width="64" Height="64">
                                 <Image.Source>
                                     <CroppedBitmap Source="{Binding ImageFile}" SourceRect="{Binding UIRect}" />
                                 </Image.Source>
@@ -132,10 +134,14 @@
                             <TextBlock Grid.Column="2" Grid.Row="1" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding FacialHair}" />
                             <TextBlock Grid.Column="2" Grid.Row="2" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Makeup}"/>
                             <TextBlock Grid.Column="2" Grid.Row="2" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Emotion}" />
-                            <TextBlock Grid.Column="2" Grid.Row="3" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Occlusion}"/>
-                            <TextBlock Grid.Column="2" Grid.Row="3" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Exposure}"/>
-                            <TextBlock Grid.Column="2" Grid.Row="4" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding HeadPose}"/>
-                            <TextBlock Grid.Column="2" Grid.Row="5" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Accessories}"/>
+                            <TextBlock Grid.Column="2" Grid.Row="3" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding ForeheadOcclusion}"/>
+                            <TextBlock Grid.Column="2" Grid.Row="3" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Blur}"/>
+                            <TextBlock Grid.Column="2" Grid.Row="4" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding EyeOcclusion}"/>
+                            <TextBlock Grid.Column="2" Grid.Row="4" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Exposure}"/>
+                            <TextBlock Grid.Column="2" Grid.Row="5" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding MouthOcclusion}"/>
+                            <TextBlock Grid.Column="2" Grid.Row="5" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Noise}"/>
+                            <TextBlock Grid.Column="2" Grid.Row="6" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding HeadPose}"/>
+                            <TextBlock Grid.Column="2" Grid.Row="7" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Accessories}"/>
                     </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

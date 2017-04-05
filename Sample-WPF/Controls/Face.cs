@@ -115,9 +115,19 @@ namespace Microsoft.ProjectOxford.Face.Controls
         private string _makeup;
 
         /// <summary>
-        /// Indicates the occlusion
+        /// Indicates the eye occlusion
         /// </summary>
-        private string _occlusion;
+        private string _eyeOcclusion;
+
+        /// <summary>
+        /// Indicates the forehead occlusion
+        /// </summary>
+        private string _foreheadOcclusion;
+
+        /// <summary>
+        /// Indicates the mouth occlusion
+        /// </summary>
+        private string _mouthOcclusion;
 
         /// <summary>
         /// Indicates the accessories
@@ -404,14 +414,40 @@ namespace Microsoft.ProjectOxford.Face.Controls
         }
 
         /// <summary>
-        /// Gets or sets a value indicating the occlusion type
+        /// Gets or sets a value indicating the occlusion type of eye
         /// </summary>
-        public string Occlusion
+        public string EyeOcclusion
         {
-            get { return _occlusion; }
+            get { return _eyeOcclusion; }
             set
             {
-                _occlusion = value;
+                _eyeOcclusion = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the occlusion type of forehead
+        /// </summary>
+        public string ForeheadOcclusion
+        {
+            get { return _foreheadOcclusion; }
+            set
+            {
+                _foreheadOcclusion = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the occlusion type of mouth
+        /// </summary>
+        public string MouthOcclusion
+        {
+            get { return _mouthOcclusion; }
+            set
+            {
+                _mouthOcclusion = value;
                 OnPropertyChanged<string>();
             }
         }
