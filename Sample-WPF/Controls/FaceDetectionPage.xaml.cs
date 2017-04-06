@@ -249,7 +249,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                 Gender = face.FaceAttributes.Gender,
                                 HeadPose = string.Format("Pitch: {0}, Roll: {1}, Yaw: {2}", Math.Round(face.FaceAttributes.HeadPose.Pitch, 2), Math.Round(face.FaceAttributes.HeadPose.Roll, 2), Math.Round(face.FaceAttributes.HeadPose.Yaw, 2)),
                                 FacialHair = string.Format("Facial Hair: {0}", face.FaceAttributes.FacialHair.Moustache + face.FaceAttributes.FacialHair.Beard + face.FaceAttributes.FacialHair.Sideburns > 0 ? "Yes" : "No"),
-                                Glasses = face.FaceAttributes.Glasses.ToString(),
+                                Glasses = string.Format("Glasses Type: {0}", face.FaceAttributes.Glasses.ToString()),
                                 Emotion = $"{GetEmotion(face.FaceAttributes.Emotion)}",
                                 Hair = string.Format("Hair: {0}", GetHair(face.FaceAttributes.Hair)),
                                 Makeup = string.Format("Makeup: {0}", ((face.FaceAttributes.Makeup.EyeMakeup || face.FaceAttributes.Makeup.LipMakeup) ? "Yes" : "No")),
