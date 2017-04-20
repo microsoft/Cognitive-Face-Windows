@@ -17,6 +17,7 @@
     <tags>Face Oxford ProjectOxford Microsoft Cognitive CognitiveServices</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="Microsoft.ProjectOxford.Common" version="[1.0.324)" />      
     </dependencies>
   </metadata>
 </package>
