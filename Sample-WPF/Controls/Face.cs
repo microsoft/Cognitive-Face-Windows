@@ -89,11 +89,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
         private string _facialHair;
 
         /// <summary>
-        /// Indicates whether the face is smile or not
-        /// </summary>
-        private string _isSmiling;
-
-        /// <summary>
         /// Indicates the glasses type
         /// </summary>
         private string _glasses;
@@ -102,6 +97,11 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// Indicates the headPose
         /// </summary>
         private string _headPose;
+
+        /// <summary>
+        /// Indicates the emotion
+        /// </summary>
+        private string _emotion;
 
         #endregion Fields
 
@@ -299,23 +299,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the face is smile or not
-        /// </summary>
-        public string IsSmiling
-        {
-            get
-            {
-                return _isSmiling;
-            }
-
-            set
-            {
-                _isSmiling = value;
-                OnPropertyChanged<bool>();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating the glasses type 
         /// </summary>
         public string Glasses
@@ -341,6 +324,16 @@ namespace Microsoft.ProjectOxford.Face.Controls
             set
             {
                 _headPose = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        public string Emotion
+        {
+            get { return _emotion; }
+            set
+            {
+                _emotion = value;
                 OnPropertyChanged<string>();
             }
         }

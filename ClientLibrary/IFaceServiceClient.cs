@@ -36,7 +36,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-
 using Microsoft.ProjectOxford.Face.Contract;
 
 namespace Microsoft.ProjectOxford.Face
@@ -77,6 +76,11 @@ namespace Microsoft.ProjectOxford.Face
         /// Analyses glasses type
         /// </summary>
         Glasses,
+
+        /// <summary>
+        /// Analyses emotion
+        /// </summary>
+        Emotion,
     }
 
     /// <summary>
@@ -173,7 +177,7 @@ namespace Microsoft.ProjectOxford.Face
         /// <param name="name">The name.</param>
         /// <param name="userData">The user data.</param>     
         /// <returns>Task object.</returns>
-        Task CreateFaceListAsync(string faceListId, string name, string userData);
+        Task CreateFaceListAsync(string faceListId, string name, string userData = null);
 
         /// <summary>
         /// Creates a person asynchronously.
