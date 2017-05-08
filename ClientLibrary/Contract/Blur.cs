@@ -30,16 +30,60 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System.Reflection;
-using System.Resources;
 
-[assembly: AssemblyTitle("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyDescription("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft ProjectOxford")]
-[assembly: AssemblyCopyright("Copyright © 2016 Microsoft")]
-[assembly: AssemblyTrademark("Microsoft")]
-[assembly: NeutralResourcesLanguage("en")]
+namespace Microsoft.ProjectOxford.Face.Contract
+{
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
-[assembly: AssemblyVersion("1.3.0")]
-[assembly: AssemblyFileVersion("1.3.0")]
+    /// <summary>
+    /// Definition of blur level
+    /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum BlurLevel
+    {
+        /// <summary>
+        /// Low blur level indicating a clear face image
+        /// </summary>
+        Low,
+
+        /// <summary>
+        /// Medium blur level indicating a slightly blurry face image
+        /// </summary>
+        Medium,
+
+        /// <summary>
+        /// High blur level indicating a extremely blurry face image
+        /// </summary>
+        High
+    }
+
+    /// <summary>
+    /// Face Blur class contains blur information
+    /// </summary>
+    public class Blur
+    {
+        #region Properties
+
+        /// <summary>
+        /// Indicating the blur level of face image
+        /// </summary>
+        public BlurLevel BlurLevel
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Blur value is in range [0, 1]. Larger value means the face image is more blurry.
+        /// [0, 0.25) is low blur level.
+        /// [0.25, 0.75) is medium blur level.
+        /// [0.75, 1] is high blur level.
+        /// </summary>
+        public double Value
+        {
+            get; set;
+        }
+
+        #endregion Properties
+    }
+}

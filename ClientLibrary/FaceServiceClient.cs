@@ -442,7 +442,7 @@ namespace Microsoft.ProjectOxford.Face
         }
 
         /// <summary>
-        /// Gets all person groups asynchronously.
+        /// Gets person groups asynchronously.
         /// </summary>
         /// <returns>Person group entity array.</returns>
         [Obsolete("use ListPersonGroupsAsync instead")]
@@ -563,20 +563,37 @@ namespace Microsoft.ProjectOxford.Face
         }
 
         /// <summary>
-        /// Gets all persons inside a person group asynchronously.
+        /// Gets persons inside a person group asynchronously.
         /// </summary>
         /// <param name="personGroupId">The person group id.</param>
         /// <returns>
         /// The person entity array.
         /// </returns>
+        [Obsolete("use ListPersonsAsync instead")]
         public async Task<Person[]> GetPersonsAsync(string personGroupId)
         {
+            return await ListPersonsAsync(personGroupId);
+        }
+
+        /// <summary>
+        /// List the top persons whose Id is larger than "start" inside a person group asynchronously.
+        /// </summary>
+        /// <param name="personGroupId">The person group id.</param>
+        /// <param name="start">Person Id bar. List the persons whose Id is larger than "start".</param>
+        /// <param name="top">The number of persons to list.</param>>
+        /// <returns>
+        /// The person entity array.
+        /// </returns>
+        public async Task<Person[]> ListPersonsAsync(string personGroupId, string start = "", int top = 1000)
+        {
             var requestUrl = string.Format(
-                "{0}/{1}/{2}/{3}",
+                "{0}/{1}/{2}/{3}?start={4}&top={5}",
                 ServiceHost,
                 PersonGroupsQuery,
                 personGroupId,
-                PersonsQuery);
+                PersonsQuery,
+                start,
+                top.ToString(CultureInfo.InvariantCulture));
 
             return await this.SendRequestAsync<object, Person[]>(HttpMethod.Get, requestUrl, null);
         }

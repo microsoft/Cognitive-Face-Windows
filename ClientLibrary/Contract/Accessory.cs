@@ -30,16 +30,57 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System.Reflection;
-using System.Resources;
 
-[assembly: AssemblyTitle("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyDescription("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft ProjectOxford")]
-[assembly: AssemblyCopyright("Copyright © 2016 Microsoft")]
-[assembly: AssemblyTrademark("Microsoft")]
-[assembly: NeutralResourcesLanguage("en")]
+namespace Microsoft.ProjectOxford.Face.Contract
+{
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
-[assembly: AssemblyVersion("1.3.0")]
-[assembly: AssemblyFileVersion("1.3.0")]
+    /// <summary>
+    /// Accessory type
+    /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum AccessoryType
+    {
+        /// <summary>
+        /// Headwear
+        /// </summary>
+        Headwear,
+
+        /// <summary>
+        /// Glasses
+        /// </summary>
+        Glasses,
+
+        /// <summary>
+        /// Mask
+        /// </summary>
+        Mask
+    }
+
+    /// <summary>
+    /// Face accessory class contains accessory information
+    /// </summary>
+    public class Accessory
+    {
+        #region Properties
+
+        /// <summary>
+        /// Indicating the accessory type
+        /// </summary>
+        public AccessoryType Type
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Indicating the confidence for accessory type
+        /// </summary>
+        public double Confidence
+        {
+            get; set;
+        }
+
+        #endregion Properties
+    }
+}

@@ -58,9 +58,9 @@ namespace Microsoft.ProjectOxford.Face
         Gender,
 
         /// <summary>
-        /// Analyses facial hair
+        /// Analyses head pose
         /// </summary>
-        FacialHair,
+        HeadPose,
 
         /// <summary>
         /// Analyses whether is smiling
@@ -68,9 +68,9 @@ namespace Microsoft.ProjectOxford.Face
         Smile,
 
         /// <summary>
-        /// Analyses head pose
+        /// Analyses facial hair
         /// </summary>
-        HeadPose,
+        FacialHair,
 
         /// <summary>
         /// Analyses glasses type
@@ -81,6 +81,41 @@ namespace Microsoft.ProjectOxford.Face
         /// Analyses emotion
         /// </summary>
         Emotion,
+
+        /// <summary>
+        /// Analyses hair
+        /// </summary>
+        Hair,
+
+        /// <summary>
+        /// Analyses makeup
+        /// </summary>
+        Makeup,
+
+        /// <summary>
+        /// Analyses occlusion
+        /// </summary>
+        Occlusion,
+
+        /// <summary>
+        /// Analyses accessory
+        /// </summary>
+        Accessories,
+
+        /// <summary>
+        /// Analyses blur
+        /// </summary>
+        Blur,
+
+        /// <summary>
+        /// Analyses exposure
+        /// </summary>
+        Exposure,
+
+        /// <summary>
+        /// Analyses noise
+        /// </summary>
+        Noise
     }
 
     /// <summary>
@@ -334,7 +369,7 @@ namespace Microsoft.ProjectOxford.Face
         Task<PersonGroup> GetPersonGroupAsync(string personGroupId);
 
         /// <summary>
-        /// Asynchronously list the first 1000 person groups.
+        /// Asynchronously list the person groups.
         /// </summary>
         /// <returns>Person group entity array.</returns>
         [Obsolete("use ListPersonGroupsAsync instead")]
@@ -356,14 +391,24 @@ namespace Microsoft.ProjectOxford.Face
         Task<TrainingStatus> GetPersonGroupTrainingStatusAsync(string personGroupId);
 
         /// <summary>
-        /// Gets all persons inside a person group asynchronously.
+        /// Gets persons inside a person group asynchronously.
         /// </summary>
         /// <param name="personGroupId">The person group id.</param>
         /// <returns>
         /// The person entity array.
         /// </returns>
+        [Obsolete("use ListPersonsAsync instead")]
         Task<Person[]> GetPersonsAsync(string personGroupId);
 
+        /// <summary>
+        /// Asynchronously list the top persons whose Id is larger than "start".
+        /// </summary>
+        /// <param name="personGroupId">The person group id.</param>
+        /// <param name="start">The start point string in listing persons</param>
+        /// <param name="top">The number of persons to list</param>
+        /// <returns>Person entity array.</returns>
+        Task<Person[]> ListPersonsAsync(string personGroupId, string start = "", int top = 1000);
+        
         /// <summary>
         /// Groups the face asynchronously.
         /// </summary>

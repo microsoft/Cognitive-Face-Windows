@@ -177,8 +177,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     tasks.Add(Task.Factory.StartNew(
                         async (obj) =>
                         {
-                            var imgPath = obj as string;
-
+                            var imgPath = obj as string;                            
                             // Detect faces in image
                             using (var fStream = File.OpenRead(imgPath))
                             {

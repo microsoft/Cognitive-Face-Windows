@@ -30,16 +30,60 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System.Reflection;
-using System.Resources;
 
-[assembly: AssemblyTitle("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyDescription("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft ProjectOxford")]
-[assembly: AssemblyCopyright("Copyright © 2016 Microsoft")]
-[assembly: AssemblyTrademark("Microsoft")]
-[assembly: NeutralResourcesLanguage("en")]
+namespace Microsoft.ProjectOxford.Face.Contract
+{
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
-[assembly: AssemblyVersion("1.3.0")]
-[assembly: AssemblyFileVersion("1.3.0")]
+    /// <summary>
+    /// Definition of noise level
+    /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum NoiseLevel
+    {
+        /// <summary>
+        /// Low noise level indicating a clear face image
+        /// </summary>
+        Low,
+
+        /// <summary>
+        /// Medium noise level indicating a slightly noisy face image
+        /// </summary>
+        Medium,
+
+        /// <summary>
+        /// High noise level indicating a extremely noisy face image
+        /// </summary>
+        High
+    }
+
+    /// <summary>
+    /// Face Noise class contains noise information
+    /// </summary>
+    public class Noise
+    {
+        #region Properties
+
+        /// <summary>
+        /// Indicating noise level of face image
+        /// </summary>
+        public NoiseLevel NoiseLevel
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Noise value is in range [0, 1]. Larger value means the face image is more noisy.
+        /// [0, 0.3) is low noise level.
+        /// [0.3, 0.7) is medium noise level.
+        /// [0.7, 1] is high noise level. 
+        /// </summary>
+        public double Value
+        {
+            get; set;
+        }
+
+        #endregion Properties
+    }
+}

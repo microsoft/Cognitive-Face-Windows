@@ -30,16 +30,32 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System.Reflection;
-using System.Resources;
 
-[assembly: AssemblyTitle("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyDescription("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft ProjectOxford")]
-[assembly: AssemblyCopyright("Copyright © 2016 Microsoft")]
-[assembly: AssemblyTrademark("Microsoft")]
-[assembly: NeutralResourcesLanguage("en")]
+namespace Microsoft.ProjectOxford.Face.Contract
+{
+    /// <summary>
+    /// Face Makeup class contains makeup information
+    /// </summary>
+    public class Makeup
+    {
+        #region Properties
 
-[assembly: AssemblyVersion("1.3.0")]
-[assembly: AssemblyFileVersion("1.3.0")]
+        /// <summary>
+        /// Indicating whether eye has makeup or not
+        /// </summary>
+        public bool EyeMakeup
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Indicating whether lip has makeup or not
+        /// </summary>
+        public bool LipMakeup
+        {
+            get; set;
+        }
+
+        #endregion Properties
+    }
+}

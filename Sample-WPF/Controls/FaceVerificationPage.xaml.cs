@@ -279,8 +279,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                 // User already picked one image
                 var pickedImagePath = dlg.FileName;
-                var imageInfo = UIHelper.GetImageInfoForRendering(pickedImagePath);
-                LeftImageDisplay.Source = new BitmapImage(new Uri(pickedImagePath));
+                var renderingImage = UIHelper.LoadImageAppliedOrientation(pickedImagePath);
+                var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+                LeftImageDisplay.Source = renderingImage;
 
                 // Clear last time detection results
                 LeftResultCollection.Clear();
@@ -345,8 +346,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                 // User already picked one image
                 var pickedImagePath = dlg.FileName;
-                var imageInfo = UIHelper.GetImageInfoForRendering(pickedImagePath);
-                RightImageDisplay.Source = new BitmapImage(new Uri(pickedImagePath));
+                var renderingImage = UIHelper.LoadImageAppliedOrientation(pickedImagePath);
+                var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+                RightImageDisplay.Source = renderingImage;
 
                 // Clear last time detection results
                 RightResultCollection.Clear();
@@ -661,8 +663,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                 // User already picked one image
                 var pickedImagePath = dlg.FileName;
-                var imageInfo = UIHelper.GetImageInfoForRendering(pickedImagePath);
-                RightImageDisplay2.Source = new BitmapImage(new Uri(pickedImagePath));
+                var renderingImage = UIHelper.LoadImageAppliedOrientation(pickedImagePath);
+                var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+                RightImageDisplay2.Source = renderingImage;
 
                 // Clear last time detection results
                 RightFaceResultCollection.Clear();

@@ -33,6 +33,7 @@
 
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
 
 namespace Microsoft.ProjectOxford.Face.Controls
 {
@@ -44,14 +45,14 @@ namespace Microsoft.ProjectOxford.Face.Controls
         #region Fields
 
         /// <summary>
-        /// Face gender text string
-        /// </summary>
-        private string _gender;
-
-        /// <summary>
         /// Face age text string
         /// </summary>
         private string _age;
+
+        /// <summary>
+        /// Face gender text string
+        /// </summary>
+        private string _gender;
 
         /// <summary>
         /// confidence value of this face to a target face
@@ -84,6 +85,11 @@ namespace Microsoft.ProjectOxford.Face.Controls
         private int _width;
 
         /// <summary>
+        /// Indicates the headPose
+        /// </summary>
+        private string _headPose;
+
+        /// <summary>
         /// Facial hair display string
         /// </summary>
         private string _facialHair;
@@ -94,14 +100,54 @@ namespace Microsoft.ProjectOxford.Face.Controls
         private string _glasses;
 
         /// <summary>
-        /// Indicates the headPose
-        /// </summary>
-        private string _headPose;
-
-        /// <summary>
         /// Indicates the emotion
         /// </summary>
         private string _emotion;
+
+        /// <summary>
+        /// Indicates the hair
+        /// </summary>
+        private string _hair;
+
+        /// <summary>
+        /// Indicates the makeup
+        /// </summary>
+        private string _makeup;
+
+        /// <summary>
+        /// Indicates the eye occlusion
+        /// </summary>
+        private string _eyeOcclusion;
+
+        /// <summary>
+        /// Indicates the forehead occlusion
+        /// </summary>
+        private string _foreheadOcclusion;
+
+        /// <summary>
+        /// Indicates the mouth occlusion
+        /// </summary>
+        private string _mouthOcclusion;
+
+        /// <summary>
+        /// Indicates the accessories
+        /// </summary>
+        private string _accessories;
+
+        /// <summary>
+        /// Indicates the blur
+        /// </summary>
+        private string _blur;
+
+        /// <summary>
+        /// Indicates the exposure
+        /// </summary>
+        private string _exposure;
+
+        /// <summary>
+        /// Indicates the noise
+        /// </summary>
+        private string _noise;        
 
         #endregion Fields
 
@@ -117,23 +163,6 @@ namespace Microsoft.ProjectOxford.Face.Controls
         #region Properties
 
         /// <summary>
-        /// Gets or sets gender text string 
-        /// </summary>
-        public string Gender
-        {
-            get
-            {
-                return _gender;
-            }
-
-            set
-            {
-                _gender = value;
-                OnPropertyChanged<string>();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets age text string
         /// </summary>
         public string Age
@@ -146,6 +175,23 @@ namespace Microsoft.ProjectOxford.Face.Controls
             set
             {
                 _age = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets gender text string 
+        /// </summary>
+        public string Gender
+        {
+            get
+            {
+                return _gender;
+            }
+
+            set
+            {
+                _gender = value;
                 OnPropertyChanged<string>();
             }
         }
@@ -181,7 +227,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// <summary>
         /// Gets or sets image path
         /// </summary>
-        public string ImagePath
+        public ImageSource ImageFile
         {
             get;
             set;
@@ -282,6 +328,19 @@ namespace Microsoft.ProjectOxford.Face.Controls
         }
 
         /// <summary>
+        /// Gets or sets a value indicating the head pose value.
+        /// </summary>
+        public string HeadPose
+        {
+            get { return _headPose; }
+            set
+            {
+                _headPose = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
         /// Gets or sets facial hair display string
         /// </summary>
         public string FacialHair
@@ -316,24 +375,131 @@ namespace Microsoft.ProjectOxford.Face.Controls
         }
 
         /// <summary>
-        /// Gets or sets a value indicating the head pose value.
+        /// Gets or sets a value indicating the emotion type
         /// </summary>
-        public string HeadPose
-        {
-            get { return _headPose; }
-            set
-            {
-                _headPose = value;
-                OnPropertyChanged<string>();
-            }
-        }
-
         public string Emotion
         {
             get { return _emotion; }
             set
             {
                 _emotion = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the hair type
+        /// </summary>
+        public string Hair
+        {
+            get { return _hair; }
+            set
+            {
+                _hair = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the makeup type
+        /// </summary>
+        public string Makeup
+        {
+            get { return _makeup; }
+            set
+            {
+                _makeup = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the occlusion type of eye
+        /// </summary>
+        public string EyeOcclusion
+        {
+            get { return _eyeOcclusion; }
+            set
+            {
+                _eyeOcclusion = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the occlusion type of forehead
+        /// </summary>
+        public string ForeheadOcclusion
+        {
+            get { return _foreheadOcclusion; }
+            set
+            {
+                _foreheadOcclusion = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the occlusion type of mouth
+        /// </summary>
+        public string MouthOcclusion
+        {
+            get { return _mouthOcclusion; }
+            set
+            {
+                _mouthOcclusion = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the accessories type
+        /// </summary>
+        public string Accessories
+        {
+            get { return _accessories; }
+            set
+            {
+                _accessories = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the blur type
+        /// </summary>
+        public string Blur
+        {
+            get { return _blur; }
+            set
+            {
+                _blur = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the exposure type
+        /// </summary>
+        public string Exposure
+        {
+            get { return _exposure; }
+            set
+            {
+                _exposure = value;
+                OnPropertyChanged<string>();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating the noise type
+        /// </summary>
+        public string Noise
+        {
+            get { return _noise; }
+            set
+            {
+                _noise = value;
                 OnPropertyChanged<string>();
             }
         }
