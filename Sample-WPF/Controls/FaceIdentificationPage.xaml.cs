@@ -210,8 +210,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
             MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
             string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
+            string endpoint= mainWindow._scenariosControl.SubscriptionEndPoint;
 
-            var faceServiceClient = new FaceServiceClient(subscriptionKey);
+            var faceServiceClient = new FaceServiceClient(subscriptionKey,endpoint);
 
             // Test whether the group already exists
             try
@@ -444,8 +445,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                 MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                 string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-
-                var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                string subscriptionEndPoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                var faceServiceClient = new FaceServiceClient(subscriptionKey, subscriptionEndPoint);
 
                 // Call detection REST API
                 using (var fStream = File.OpenRead(pickedImagePath))

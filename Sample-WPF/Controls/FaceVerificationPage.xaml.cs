@@ -296,8 +296,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     {
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-
-                        var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                        string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                        var faceServiceClient = new FaceServiceClient(subscriptionKey,endpoint);
                         var faces = await faceServiceClient.DetectAsync(fileStream);
 
                         // Handle REST API calling error
@@ -364,8 +364,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     {
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-
-                        var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                        string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                        var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
                         var faces = await faceServiceClient.DetectAsync(fileStream);
 
@@ -418,8 +418,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 {
                     MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                     string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
+                    string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                    var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
-                    var faceServiceClient = new FaceServiceClient(subscriptionKey);
                     var res = await faceServiceClient.VerifyAsync(Guid.Parse(faceId1), Guid.Parse(faceId2));
 
                     // Verification result contains IsIdentical (true or false) and Confidence (in range 0.0 ~ 1.0),
@@ -452,9 +453,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
             MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
             string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
+            string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+            var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
-            var faceServiceClient = new FaceServiceClient(subscriptionKey);
-            
             // Test whether the group already exists
             try
             {
@@ -681,8 +682,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     {
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-
-                        var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                        string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                        var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
                         var faces = await faceServiceClient.DetectAsync(fileStream);
 
@@ -734,8 +735,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 {
                     MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                     string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
+                    string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                    var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
-                    var faceServiceClient = new FaceServiceClient(subscriptionKey);
                     var res = await faceServiceClient.VerifyAsync(Guid.Parse(faceId), GroupName, Guid.Parse(Person.PersonId));
 
                     // Verification result contains IsIdentical (true or false) and Confidence (in range 0.0 ~ 1.0),

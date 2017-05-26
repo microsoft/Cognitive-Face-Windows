@@ -52,6 +52,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
     /// </summary>
     public partial class FaceGroupingPage : Page
     {
+        
         #region Fields
 
         /// <summary>
@@ -161,8 +162,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                 MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                 string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-
-                var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
                 MainWindow.Log("Request: Preparing faces for grouping, detecting faces in chosen folder.");
                 
