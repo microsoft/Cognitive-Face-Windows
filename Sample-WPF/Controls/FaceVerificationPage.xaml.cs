@@ -296,7 +296,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     {
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-                        string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                        string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
                         var faceServiceClient = new FaceServiceClient(subscriptionKey,endpoint);
                         var faces = await faceServiceClient.DetectAsync(fileStream);
 
@@ -364,7 +364,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     {
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-                        string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                        string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
                         var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
                         var faces = await faceServiceClient.DetectAsync(fileStream);
@@ -418,7 +418,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 {
                     MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                     string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-                    string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                    string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
                     var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
                     var res = await faceServiceClient.VerifyAsync(Guid.Parse(faceId1), Guid.Parse(faceId2));
@@ -453,7 +453,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
             MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
             string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-            string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+            string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
             var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
             // Test whether the group already exists
@@ -682,7 +682,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     {
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-                        string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                        string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
                         var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
                         var faces = await faceServiceClient.DetectAsync(fileStream);
@@ -735,7 +735,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 {
                     MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                     string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-                    string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                    string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
                     var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
                     var res = await faceServiceClient.VerifyAsync(Guid.Parse(faceId), GroupName, Guid.Parse(Person.PersonId));

@@ -210,7 +210,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
             MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
             string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-            string endpoint= mainWindow._scenariosControl.SubscriptionEndPoint;
+            string endpoint= mainWindow._scenariosControl.SubscriptionEndpoint;
 
             var faceServiceClient = new FaceServiceClient(subscriptionKey,endpoint);
 
@@ -445,8 +445,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                 MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                 string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-                string subscriptionEndPoint = mainWindow._scenariosControl.SubscriptionEndPoint;
-                var faceServiceClient = new FaceServiceClient(subscriptionKey, subscriptionEndPoint);
+                string subscriptionEndpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
+                var faceServiceClient = new FaceServiceClient(subscriptionKey, subscriptionEndpoint);
 
                 // Call detection REST API
                 using (var fStream = File.OpenRead(pickedImagePath))

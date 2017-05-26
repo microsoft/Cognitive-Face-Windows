@@ -162,7 +162,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                 MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                 string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-                string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
                 var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
                 MainWindow.Log("Request: Preparing faces for grouping, detecting faces in chosen folder.");

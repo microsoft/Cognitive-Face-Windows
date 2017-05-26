@@ -229,7 +229,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     {
                         MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                         string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-                        string endpoint = mainWindow._scenariosControl.SubscriptionEndPoint;
+                        string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
 
                         var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
                         ProjectOxford.Face.Contract.Face[] faces = await faceServiceClient.DetectAsync(fStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair, FaceAttributeType.Emotion, FaceAttributeType.Hair, FaceAttributeType.Makeup, FaceAttributeType.Occlusion, FaceAttributeType.Accessories, FaceAttributeType.Noise, FaceAttributeType.Exposure, FaceAttributeType.Blur });
