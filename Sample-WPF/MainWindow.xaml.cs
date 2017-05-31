@@ -97,6 +97,10 @@ namespace Microsoft.ProjectOxford.Face
                     Title = "Face Verification",
                 },
             };
+
+            //Set the default endpoint when main windows is initiated
+            MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
+            mainWindow._scenariosControl.set_subscriptionPage_defaultEndpoint("https://westcentralus.api.cognitive.microsoft.com/face/v1.0");
         }
 
         #endregion Constructors
