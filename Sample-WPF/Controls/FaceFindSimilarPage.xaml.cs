@@ -426,7 +426,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 var imageList =
                     new ConcurrentBag<string>(
                         Directory.EnumerateFiles(dlg.SelectedPath, "*.*", SearchOption.AllDirectories)
-                            .Where(s => s.EndsWith(".jpg") || s.EndsWith(".png") || s.EndsWith(".bmp") || s.EndsWith(".gif")));
+                            .Where(s => s.ToLower().EndsWith(".jpg") || s.ToLower().EndsWith(".png") || s.ToLower().EndsWith(".bmp") || s.ToLower().EndsWith(".gif")));
                 
                 string img;
                 int invalidImageCount = 0;
