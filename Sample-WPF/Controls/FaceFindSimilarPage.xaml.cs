@@ -54,6 +54,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
     /// </summary>
     public partial class FaceFindSimilarPage : Page, INotifyPropertyChanged
     {
+
         #region Fields
 
         /// <summary>
@@ -250,8 +251,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                     MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
                     string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-
-                    var faceServiceClient = new FaceServiceClient(subscriptionKey);
+                    string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
+                    var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
                     var faces = await faceServiceClient.DetectAsync(fStream);
 
                     // Update detected faces on UI
@@ -359,8 +360,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
             MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
             string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-
-            var faceServiceClient = new FaceServiceClient(subscriptionKey);
+            string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
+            var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
             try
             {
                 MainWindow.Log("Request: Face List {0} will be used to build a person database. Checking whether the face list exists.", _faceListName);
