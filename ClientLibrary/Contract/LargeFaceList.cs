@@ -30,16 +30,49 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System.Reflection;
-using System.Resources;
 
-[assembly: AssemblyTitle("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyDescription("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft ProjectOxford")]
-[assembly: AssemblyCopyright("Copyright © 2017 Microsoft")]
-[assembly: AssemblyTrademark("Microsoft")]
-[assembly: NeutralResourcesLanguage("en")]
+namespace Microsoft.ProjectOxford.Face.Contract
+{
+    /// <summary>
+    /// The large face list class.
+    /// </summary>
+    public class LargeFaceList
+    {
+        #region Properties
 
-[assembly: AssemblyVersion("1.4.0")]
-[assembly: AssemblyFileVersion("1.4.0")]
+        /// <summary>
+        /// Gets or sets the large face list identifier.
+        /// </summary>
+        /// <value>
+        /// The large face list identifier.
+        /// </value>
+        public string LargeFaceListId
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public string Name
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets or sets the user data.
+        /// </summary>
+        /// <value>
+        /// The user data.
+        /// </value>
+        public string UserData
+        {
+            get; set;
+        }
+
+        #endregion Properties
+    }
+}

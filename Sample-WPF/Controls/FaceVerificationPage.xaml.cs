@@ -64,9 +64,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
         public static readonly DependencyProperty DescriptionProperty = DependencyProperty.Register("Description", typeof(string), typeof(FaceVerificationPage));
 
         /// <summary>
-        /// Temporary group name for create person database
+        /// Temporary group id for create person database.
         /// </summary>
-        public static readonly string SampleGroupName = Guid.NewGuid().ToString();
+        private static string sampleGroupId = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Face detection result container for image on the left
@@ -241,13 +241,18 @@ namespace Microsoft.ProjectOxford.Face.Controls
         }
 
         /// <summary>
-        /// Gets group name
+        /// Gets or sets group id.
         /// </summary>
-        public string GroupName
+        public string GroupId
         {
             get
             {
-                return SampleGroupName;
+                return sampleGroupId;
+            }
+
+            set
+            {
+                sampleGroupId = value;
             }
         }
 
@@ -459,31 +464,32 @@ namespace Microsoft.ProjectOxford.Face.Controls
             // Test whether the group already exists
             try
             {
-                MainWindow.Log("Request: Group {0} will be used to build a person database. Checking whether the group exists.", GroupName);
+                MainWindow.Log("Request: Group {0} will be used to build a person database. Checking whether the group exists.", this.GroupId);
 
-                await faceServiceClient.GetPersonGroupAsync(GroupName);
+                await faceServiceClient.GetLargePersonGroupAsync(this.GroupId);
                 groupExists = true;
-                MainWindow.Log("Response: Group {0} exists.", GroupName);
+                MainWindow.Log("Response: Group {0} exists.", this.GroupId);
             }
             catch (FaceAPIException ex)
             {
-                if (ex.ErrorCode != "PersonGroupNotFound")
+                if (ex.ErrorCode != "LargePersonGroupNotFound")
                 {
                     MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
                     return;
                 }
                 else
                 {
-                    MainWindow.Log("Response: Group {0} did not exist previously.", GroupName);
+                    MainWindow.Log("Response: Group {0} did not exist previously.", this.GroupId);
                 }
             }
 
             if (groupExists)
             {
-                var cleanGroup = System.Windows.MessageBox.Show(string.Format("Requires a clean up for group \"{0}\" before setting up a new person database. Click OK to proceed, group \"{0}\" will be cleared.", GroupName), "Warning", MessageBoxButton.OKCancel);
+                var cleanGroup = System.Windows.MessageBox.Show(string.Format("Requires a clean up for group \"{0}\" before setting up a new person database. Click OK to proceed, group \"{0}\" will be cleared.", this.GroupId), "Warning", MessageBoxButton.OKCancel);
                 if (cleanGroup == MessageBoxResult.OK)
                 {
-                    await faceServiceClient.DeletePersonGroupAsync(GroupName);
+                    await faceServiceClient.DeleteLargePersonGroupAsync(this.GroupId);
+                    this.GroupId = Guid.NewGuid().ToString();
                     PersonVerifyResult = string.Empty;
                     Person.Faces.Clear();
                 }
@@ -506,13 +512,13 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 FacesCollection.Clear();
                 PersonVerifyButton.IsEnabled = (FacesCollection.Count != 0 && RightFaceResultCollection.Count != 0);
 
-                // Call create person group REST API
-                // Create person group API call will failed if group with the same name already exists
-                MainWindow.Log("Request: Creating group \"{0}\"", GroupName);
+                // Call create large person group REST API
+                // Create large person group API call will failed if group with the same name already exists
+                MainWindow.Log("Request: Creating group \"{0}\"", this.GroupId);
                 try
                 {
-                    await faceServiceClient.CreatePersonGroupAsync(GroupName, GroupName);
-                    MainWindow.Log("Response: Success. Group \"{0}\" created", GroupName);
+                    await faceServiceClient.CreateLargePersonGroupAsync(this.GroupId, this.GroupId);
+                    MainWindow.Log("Response: Success. Group \"{0}\" created", this.GroupId);
                 }
                 catch (FaceAPIException ex)
                 {
@@ -538,7 +544,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 // Call create person REST API, the new create person id will be returned
                 MainWindow.Log("Request: Creating person \"{0}\"", Person.PersonName);
                 Person.PersonId =
-                    (await faceServiceClient.CreatePersonAsync(GroupName, Person.PersonName)).PersonId.ToString();
+                    (await faceServiceClient.CreatePersonInLargePersonGroupAsync(this.GroupId, Person.PersonName)).PersonId.ToString();
                 MainWindow.Log("Response: Success. Person \"{0}\" (PersonID:{1}) created", Person.PersonName, Person.PersonId);
 
                 string img;
@@ -562,7 +568,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                 {
                                     var persistFace =
                                         await
-                                            faceServiceClient.AddPersonFaceAsync(GroupName, Guid.Parse(Person.PersonId),
+                                            faceServiceClient.AddPersonFaceInLargePersonGroupAsync(this.GroupId, Guid.Parse(Person.PersonId),
                                                 fStream, imgPath);
                                     return new Tuple<string, ClientContract.AddPersistedFaceResult>(imgPath,
                                         persistFace);
@@ -738,7 +744,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
                     var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
-                    var res = await faceServiceClient.VerifyAsync(Guid.Parse(faceId), GroupName, Guid.Parse(Person.PersonId));
+                    var res = await faceServiceClient.VerifyAsync(Guid.Parse(faceId), Guid.Parse(Person.PersonId), largePersonGroupId: this.GroupId);
 
                     // Verification result contains IsIdentical (true or false) and Confidence (in range 0.0 ~ 1.0),
                     // here we update verify result on UI by PersonVerifyResult binding

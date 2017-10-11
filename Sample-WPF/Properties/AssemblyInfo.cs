@@ -45,7 +45,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Microsoft ProjectOxford")]
-[assembly: AssemblyCopyright("Copyright © 2016 Microsoft")]
+[assembly: AssemblyCopyright("Copyright © 2017 Microsoft")]
 [assembly: AssemblyTrademark("Microsoft")]
 [assembly: AssemblyCulture("")]
 

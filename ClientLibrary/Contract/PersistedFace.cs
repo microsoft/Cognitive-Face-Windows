@@ -30,16 +30,41 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System.Reflection;
-using System.Resources;
 
-[assembly: AssemblyTitle("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyDescription("Microsoft.ProjectOxford.Face")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft ProjectOxford")]
-[assembly: AssemblyCopyright("Copyright © 2017 Microsoft")]
-[assembly: AssemblyTrademark("Microsoft")]
-[assembly: NeutralResourcesLanguage("en")]
+using System;
 
-[assembly: AssemblyVersion("1.4.0")]
-[assembly: AssemblyFileVersion("1.4.0")]
+namespace Microsoft.ProjectOxford.Face.Contract
+{
+    /// <summary>
+    /// The persisted face entity.
+    /// </summary>
+    public class PersistedFace
+    {
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the persisted face identifier.
+        /// </summary>
+        /// <value>
+        /// The persisted face identifier.
+        /// </value>
+        public Guid PersistedFaceId
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the user data.
+        /// </summary>
+        /// <value>
+        /// The user data.
+        /// </value>
+        public string UserData
+        {
+            get; set;
+        }
+
+        #endregion Properties
+    }
+}

@@ -46,7 +46,7 @@ namespace Microsoft.ProjectOxford.Face.Contract
         /// <value>
         /// The persisted faces.
         /// </value>
-        public PersonFace[] PersistedFaces
+        public PersistedFace[] PersistedFaces
         {
             get; set;
         }

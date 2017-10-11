@@ -46,6 +46,7 @@
     <Compile Include="Contract\Face.cs" />
     <Compile Include="Contract\FaceAttributes.cs" />
     <Compile Include="Contract\FaceList.cs" />
+    <Compile Include="Contract\LargeFaceList.cs" />
     <Compile Include="Contract\FaceListMetadata.cs" />
     <Compile Include="Contract\FaceMetadata.cs" />
     <Compile Include="Contract\FacialHair.cs" />
@@ -62,7 +63,8 @@
     <Compile Include="Contract\Person.cs" />
     <Compile Include="Contract\Candidate.cs" />
     <Compile Include="Contract\CreatePersonResult.cs" />
-    <Compile Include="Contract\PersonFace.cs" />
+    <Compile Include="Contract\PersistedFace.cs" />
+    <Compile Include="Contract\LargePersonGroup.cs" />
     <Compile Include="Contract\PersonGroup.cs" />
     <Compile Include="Contract\FeatureCoordinate.cs" />
     <Compile Include="Contract\SimilarFace.cs" />

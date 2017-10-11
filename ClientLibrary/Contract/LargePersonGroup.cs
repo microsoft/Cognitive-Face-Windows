@@ -31,27 +31,35 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-
 namespace Microsoft.ProjectOxford.Face.Contract
 {
     /// <summary>
-    /// The person face entity.
+    /// The large person group entity.
     /// </summary>
-    public class PersonFace
+    public class LargePersonGroup
     {
         #region Properties
 
         /// <summary>
-        /// Gets or sets the persisted face identifier.
+        /// Gets or sets the large person group identifier.
         /// </summary>
         /// <value>
-        /// The persisted face identifier.
+        /// The large person group identifier.
         /// </value>
-        public Guid PersistedFaceId
+        public string LargePersonGroupId
         {
-            get;
-            set;
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>
+        /// The name of the large person group.
+        /// </value>
+        public string Name
+        {
+            get; set;
         }
 
         /// <summary>

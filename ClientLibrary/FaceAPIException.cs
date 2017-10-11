@@ -59,9 +59,9 @@ namespace Microsoft.ProjectOxford.Face
         public FaceAPIException(string errorCode, string errorMessage, HttpStatusCode statusCode)
             : base(errorMessage + "(" + errorCode + ")")
         {
-            ErrorCode = errorCode;
-            ErrorMessage = errorMessage;
-            HttpStatus = statusCode;
+            this.ErrorCode = errorCode;
+            this.ErrorMessage = errorMessage;
+            this.HttpStatus = statusCode;
         }
 
         #endregion Constructors

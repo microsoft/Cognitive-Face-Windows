@@ -93,9 +93,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
         private int _maxConcurrentProcesses;
 
         /// <summary>
-        /// Temporary stored face list name
+        /// Temporary stored large face list id.
         /// </summary>
-        private string _faceListName = Guid.NewGuid().ToString();
+        private string _largeFaceListId = Guid.NewGuid().ToString();
 
         #endregion Fields
 
@@ -274,7 +274,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         {
                             // Default mode, call find matchPerson similar REST API, the result contains all the face ids which is personal similar to the query face
                             const int requestCandidatesCount = 4;
-                            var result = await faceServiceClient.FindSimilarAsync(faceId, _faceListName, requestCandidatesCount);
+                            var result = await faceServiceClient.FindSimilarAsync(faceId, largeFaceListId: this._largeFaceListId, maxNumOfCandidatesReturned: requestCandidatesCount);
 
                             // Update find matchPerson similar results collection for rendering
                             var personSimilarResult = new FindSimilarResult();
@@ -311,7 +311,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         {
                             // Call find facial match similar REST API, the result faces the top N with the highest similar confidence 
                             const int requestCandidatesCount = 4;
-                            var result = await faceServiceClient.FindSimilarAsync(faceId, _faceListName, FindSimilarMatchMode.matchFace, requestCandidatesCount);
+                            var result = await faceServiceClient.FindSimilarAsync(faceId, largeFaceListId: this._largeFaceListId, mode: FindSimilarMatchMode.matchFace, maxNumOfCandidatesReturned: requestCandidatesCount);
 
                             // Update "matchFace" similar results collection for rendering
                             var faceSimilarResults = new FindSimilarResult();
@@ -364,31 +364,32 @@ namespace Microsoft.ProjectOxford.Face.Controls
             var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
             try
             {
-                MainWindow.Log("Request: Face List {0} will be used to build a person database. Checking whether the face list exists.", _faceListName);
+                MainWindow.Log("Request: Large Face List {0} will be used to build a person database. Checking whether the large face list exists.", this._largeFaceListId);
 
-                await faceServiceClient.GetFaceListAsync(_faceListName);
+                await faceServiceClient.GetLargeFaceListAsync(this._largeFaceListId);
                 groupExists = true;
-                MainWindow.Log("Response: Face List {0} exists.", _faceListName);
+                MainWindow.Log("Response: Face List {0} exists.", this._largeFaceListId);
             }
             catch (FaceAPIException ex)
             {
-                if (ex.ErrorCode != "FaceListNotFound")
+                if (ex.ErrorCode != "LargeFaceListNotFound")
                 {
                     MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
                     return;
                 }
                 else
                 {
-                    MainWindow.Log("Response: Face List {0} did not exist previously.", _faceListName);
+                    MainWindow.Log("Response: Large Face List {0} did not exist previously.", this._largeFaceListId);
                 }
             }
 
             if (groupExists)
             {
-                var cleanFaceList = System.Windows.MessageBox.Show(string.Format("Requires a clean up for face list \"{0}\" before setting up a new face list. Click OK to proceed, face list \"{0}\" will be cleared.", _faceListName), "Warning", MessageBoxButton.OKCancel);
-                if (cleanFaceList == MessageBoxResult.OK)
+                var cleanLargeFaceList = System.Windows.MessageBox.Show(string.Format("Requires a clean up for large face list \"{0}\" before setting up a new large face list. Click OK to proceed, large face list \"{0}\" will be cleared.", this._largeFaceListId), "Warning", MessageBoxButton.OKCancel);
+                if (cleanLargeFaceList == MessageBoxResult.OK)
                 {
-                    await faceServiceClient.DeleteFaceListAsync(_faceListName);
+                    await faceServiceClient.DeleteLargeFaceListAsync(this._largeFaceListId);
+                    this._largeFaceListId = Guid.NewGuid().ToString();
                 }
                 else
                 {
@@ -422,7 +423,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                 MainWindow.Log("Request: Preparing, detecting faces in chosen folder.");
 
-                await faceServiceClient.CreateFaceListAsync(_faceListName, _faceListName, "face list for sample");
+                await faceServiceClient.CreateLargeFaceListAsync(this._largeFaceListId, this._largeFaceListId, "large face list for sample");
 
                 var imageList =
                     new ConcurrentBag<string>(
@@ -443,7 +444,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                 try
                                 {
                                     var faces =
-                                        await faceServiceClient.AddFaceToFaceListAsync(_faceListName, fStream);
+                                        await faceServiceClient.AddFaceToLargeFaceListAsync(this._largeFaceListId, fStream);
                                     return new Tuple<string, ClientContract.AddPersistedFaceResult>(imgPath, faces);
                                 }
                                 catch (FaceAPIException ex)
@@ -515,12 +516,36 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 }
                 if (invalidImageCount > 0)
                 {
-                    MainWindow.Log("Warning: more or less than one face is detected in {0} images, can not add to face list.", invalidImageCount);
+                    MainWindow.Log("Warning: more or less than one face is detected in {0} images, can not add to large face list.", invalidImageCount);
                 }
                 MainWindow.Log("Response: Success. Total {0} faces are detected.", FacesCollection.Count);
+
+                try
+                {
+                    // Start train large face list.
+                    MainWindow.Log("Request: Training Large Face List \"{0}\"", this._largeFaceListId);
+                    await faceServiceClient.TrainLargeFaceListAsync(this._largeFaceListId);
+
+                    // Wait until train completed
+                    while (true)
+                    {
+                        await Task.Delay(1000);
+                        var status = await faceServiceClient.GetLargeFaceListTrainingStatusAsync(this._largeFaceListId);
+                        MainWindow.Log("Response: {0}. Large Face List \"{1}\" training process is {2}", "Success", this._largeFaceListId, status.Status);
+                        if (status.Status != Contract.Status.Running)
+                        {
+                            break;
+                        }
+                    }
+                    OpenFaceButton.IsEnabled = true;
+                }
+                catch (FaceAPIException ex)
+                {
+                    MainWindow.Log("Response: {0}. {1}", ex.ErrorCode, ex.ErrorMessage);
+                }
             }
+
             GC.Collect();
-            OpenFaceButton.IsEnabled = true;
         }
         
         #endregion Methods
