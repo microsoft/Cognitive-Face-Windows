@@ -57,6 +57,7 @@ namespace Microsoft.ProjectOxford.Face
         /// <param name="errorMessage">Message represents the detailed error description</param>
         /// <param name="statusCode">Http status code</param>
         public FaceAPIException(string errorCode, string errorMessage, HttpStatusCode statusCode)
+            : base(errorMessage + "(" + errorCode + ")")
         {
             ErrorCode = errorCode;
             ErrorMessage = errorMessage;
