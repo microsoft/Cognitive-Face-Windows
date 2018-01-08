@@ -45,8 +45,14 @@ namespace Microsoft.ProjectOxford.Face
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
+        #region Constants
+
+        private const string DefaultEndpoint = "https://westus.api.cognitive.microsoft.com/face/v1.0/";
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -98,9 +104,9 @@ namespace Microsoft.ProjectOxford.Face
                 },
             };
 
-            //Set the default endpoint when main windows is initiated
-            MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
-            mainWindow._scenariosControl.SetSubscriptionPageEndpoint("https://westus.api.cognitive.microsoft.com/face/v1.0");
+            // Set the default endpoint when main windows is initiated.
+            var mainWindow = GetWindow(this) as MainWindow;
+            mainWindow?._scenariosControl.SetSubscriptionPageEndpoint(DefaultEndpoint);
         }
 
         #endregion Constructors

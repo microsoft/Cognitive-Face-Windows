@@ -101,6 +101,17 @@ namespace Microsoft.ProjectOxford.Face.Contract
         }
 
         /// <summary>
+        /// Gets or sets the last successful training time.
+        /// </summary>
+        /// <value>
+        /// The last successful training time.
+        /// </value>
+        public DateTime? LastSuccessfulTrainingDateTime
+        {
+            get; set;
+        }
+
+        /// <summary>
         /// Gets or sets the message.
         /// </summary>
         /// <value>
