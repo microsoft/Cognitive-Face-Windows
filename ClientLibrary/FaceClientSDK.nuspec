@@ -3,17 +3,17 @@
   <metadata>
     <id>Microsoft.ProjectOxford.Face</id>
     <title>Microsoft Cognitive Services Face API Client Library</title>
-    <version>$version$</version>
+    <version>1.4.0</version>
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
     <licenseUrl>https://github.com/Microsoft/Cognitive-Face-Windows/blob/master/LICENSE.md</licenseUrl>
-    <projectUrl>https://www.microsoft.com/cognitive-services/en-us/face-api</projectUrl>
+    <projectUrl>https://azure.microsoft.com/en-us/services/cognitive-services/face/</projectUrl>
     <iconUrl>https://portalstoragewuprod.azureedge.net/media/Default/Media/FaceAPI/Icons_Vision_Face.svg</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Microsoft Cognitive Services Face API Client Library</description>
     <summary>Use Face API Client Library to enrich your apps with Microsoft's state-of-the-art cloud-based face algorithms.</summary>
-    <releaseNotes>Support emotion attributes in Face Detection.</releaseNotes>
-    <copyright>Copyright (c) 2017</copyright>
+    <releaseNotes>Million Scale support via LargePersonGroup/LargeFaceList.</releaseNotes>
+    <copyright>Copyright (c) 2018</copyright>
     <tags>Face Oxford ProjectOxford Microsoft Cognitive CognitiveServices</tags>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="9.0.1" />
