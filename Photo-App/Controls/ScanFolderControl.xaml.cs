@@ -1196,5 +1196,23 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             var f = ctrl.DataContext as Models.Face;
             f.IsShowingOthers = true;
         }
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var ctrl = sender as ListView;
+
+            if (ctrl.SelectedItem != null)
+            {
+                var f = ctrl.DataContext as Models.Face;
+                var p = ctrl.SelectedItem as Candidate;
+                f.PersonId = p.PersonId;
+                f.IsShowingOthers = false;
+                Dispatcher.Invoke(() =>
+                {
+                    ctrl.SelectedItem = null;
+                });
+            }
+
+        }
     }
 }
