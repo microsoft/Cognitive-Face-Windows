@@ -44,12 +44,32 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
 using ClientContract = Microsoft.ProjectOxford.Face.Contract;
 using System.Windows.Media;
+using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.ProjectOxford.Face;
+using Newtonsoft.Json.Serialization;
+using Microsoft.ProjectOxford.Face.Helpers;
 
 namespace Microsoft.ProjectOxford.Face.Controls
 {
+    //using System;
+    //using System.Collections.Concurrent;
+    //using System.Collections.Generic;
+    //using System.Collections.ObjectModel;
+    //using System.ComponentModel;
+    //using System.Diagnostics;
+    //using System.IO;
+    //using System.Linq;
+    //using System.Text;
+    //using System.Threading;
+    //using System.Threading.Tasks;
+    //using System.Windows;
+    //using System.Windows.Controls;
+
+    //using ClientContract = Microsoft.ProjectOxford.Face.Contract;
+    //using System.Windows.Media;
+    
     /// <summary>
     /// Interaction logic for FaceDetection.xaml
     /// </summary>
@@ -70,7 +90,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// <summary>
         /// Faces to identify
         /// </summary>
-        private ObservableCollection<Face> _faces = new ObservableCollection<Face>();
+        private ObservableCollection<Controls.Face> _faces = new ObservableCollection<Controls.Face>();
 
         /// <summary>
         /// Person database
@@ -87,6 +107,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// </summary>
         private int _maxConcurrentProcesses;
 
+        private MainWindowLogTraceWriter _mainWindowLogTraceWriter;
+
         #endregion Fields
 
         #region Constructors
@@ -98,6 +120,8 @@ namespace Microsoft.ProjectOxford.Face.Controls
         {
             InitializeComponent();
             _maxConcurrentProcesses = 4;
+
+            _mainWindowLogTraceWriter = new MainWindowLogTraceWriter();
         }
 
         #endregion Constructors
@@ -190,7 +214,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// <summary>
         /// Gets faces to identify
         /// </summary>
-        public ObservableCollection<Face> TargetFaces
+        public ObservableCollection<Controls.Face> TargetFaces
         {
             get
             {
@@ -215,9 +239,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
             MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
             string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-            string endpoint= mainWindow._scenariosControl.SubscriptionEndpoint;
+            string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
 
-            var faceServiceClient = new FaceServiceClient(subscriptionKey,endpoint);
+            var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
 
             // Test whether the group already exists
             try
@@ -277,7 +301,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 MainWindow.Log("Request: Creating group \"{0}\"", this.GroupId);
                 try
                 {
-                    await faceServiceClient.CreateLargePersonGroupAsync(this.GroupId, this.GroupId);
+                    await faceServiceClient.CreateLargePersonGroupAsync(this.GroupId, this.GroupId, dlg.SelectedPath);
                     MainWindow.Log("Response: Success. Group \"{0}\" created", this.GroupId);
                 }
                 catch (FaceAPIException ex)
@@ -300,12 +324,18 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     Person p = new Person();
                     p.PersonName = tag;
 
-                    var faces = new ObservableCollection<Face>();
+                    var faces = new ObservableCollection<Controls.Face>();
                     p.Faces = faces;
 
                     // Call create person REST API, the new create person id will be returned
                     MainWindow.Log("Request: Creating person \"{0}\"", p.PersonName);
-                    p.PersonId = (await faceServiceClient.CreatePersonInLargePersonGroupAsync(this.GroupId, p.PersonName)).PersonId.ToString();
+
+                    p.PersonId = (await RetryHelper.OperationWithBasicRetryAsync(async () => await
+                        faceServiceClient.CreatePersonInLargePersonGroupAsync(this.GroupId, p.PersonName, dir),
+                        new[] { typeof(FaceAPIException) },
+                        traceWriter: _mainWindowLogTraceWriter
+                        )).PersonId.ToString();
+
                     MainWindow.Log("Response: Success. Person \"{0}\" (PersonID:{1}) created", p.PersonName, p.PersonId);
 
                     string img;
@@ -314,7 +344,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     new ConcurrentBag<string>(
                         Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
                             .Where(s => s.ToLower().EndsWith(".jpg") || s.ToLower().EndsWith(".png") || s.ToLower().EndsWith(".bmp") || s.ToLower().EndsWith(".gif")));
-                    
+
                     while (imageList.TryTake(out img))
                     {
                         tasks.Add(Task.Factory.StartNew(
@@ -364,7 +394,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                 }
 
                                 this.Dispatcher.Invoke(
-                                    new Action<ObservableCollection<Face>, string, ClientContract.AddPersistedFaceResult>(UIHelper.UpdateFace),
+                                    new Action<ObservableCollection<Controls.Face>, string, ClientContract.AddPersistedFaceResult>(UIHelper.UpdateFace),
                                     faces,
                                     detectionResult.Item1,
                                     detectionResult.Item2);
@@ -401,7 +431,13 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 {
                     // Start train large person group
                     MainWindow.Log("Request: Training group \"{0}\"", this.GroupId);
-                    await faceServiceClient.TrainLargePersonGroupAsync(this.GroupId);
+
+                    await RetryHelper.VoidOperationWithBasicRetryAsync(() =>
+                        faceServiceClient.TrainLargePersonGroupAsync(this.GroupId),
+                        new[] { typeof(FaceAPIException) },
+                        traceWriter: _mainWindowLogTraceWriter);
+
+                    //await faceServiceClient.TrainLargePersonGroupAsync(this.GroupId);
 
                     // Wait until train completed
                     while (true)
@@ -409,7 +445,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                         await Task.Delay(1000);
                         var status = await faceServiceClient.GetLargePersonGroupTrainingStatusAsync(this.GroupId);
                         MainWindow.Log("Response: {0}. Group \"{1}\" training process is {2}", "Success", this.GroupId, status.Status);
-                        if (status.Status != Contract.Status.Running)
+                        if (status.Status != Status.Running)
                         {
                             break;
                         }
@@ -459,7 +495,12 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 {
                     try
                     {
-                        var faces = await faceServiceClient.DetectAsync(fStream);
+                        var faces = await RetryHelper.OperationWithBasicRetryAsync(async () => await
+                            faceServiceClient.DetectAsync(fStream),
+                            new[] { typeof(FaceAPIException) },
+                            traceWriter: _mainWindowLogTraceWriter);
+
+                        //var faces = await faceServiceClient.DetectAsync(fStream);
 
                         // Convert detection result into UI binding object for rendering
                         foreach (var face in UIHelper.CalculateFaceRectangleForRendering(faces, MaxImageSize, imageInfo))
@@ -471,7 +512,14 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                         // Identify each face
                         // Call identify REST API, the result contains identified person information
-                        var identifyResult = await faceServiceClient.IdentifyAsync(faces.Select(ff => ff.FaceId).ToArray(), largePersonGroupId: this.GroupId);
+
+                        var identifyResult = await RetryHelper.OperationWithBasicRetryAsync(async () => await
+                            faceServiceClient.IdentifyAsync(faces.Select(ff => ff.FaceId).ToArray(), largePersonGroupId: this.GroupId),
+                            new[] { typeof(FaceAPIException) },
+                            traceWriter: _mainWindowLogTraceWriter);
+
+                        //var identifyResult = await faceServiceClient.IdentifyAsync(faces.Select(ff => ff.FaceId).ToArray(), largePersonGroupId: this.GroupId);
+
                         for (int idx = 0; idx < faces.Length; idx++)
                         {
                             // Update identification result for rendering
@@ -591,7 +639,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             /// <summary>
             /// Person's faces from database
             /// </summary>
-            private ObservableCollection<Face> _faces = new ObservableCollection<Face>();
+            private ObservableCollection<Controls.Face> _faces = new ObservableCollection<Controls.Face>();
 
             /// <summary>
             /// Person's id
@@ -619,7 +667,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             /// <summary>
             /// Gets or sets person's faces from database
             /// </summary>
-            public ObservableCollection<Face> Faces
+            public ObservableCollection<Controls.Face> Faces
             {
                 get
                 {
