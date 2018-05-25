@@ -684,10 +684,11 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             {
                 // Update identification result for rendering
                 var face = DetectedFaces[idx];
-                var res = identifyResult[idx];
-                if (res.Candidates.Length > 0 && _scanGroup.GroupPersons.Any(p => p.Person.PersonId == res.Candidates[0].PersonId))
+                var idResult = identifyResult[idx];
+                face.Identifications = idResult;
+                if (idResult.Candidates.Length > 0)
                 {
-                    var pers = _scanGroup.GroupPersons.Where(p => p.Person.PersonId == res.Candidates[0].PersonId).First().Person;
+                    var pers = _scanGroup.GroupPersons.Where(p => p.Person.PersonId == idResult.Candidates[0].PersonId).First().Person;
                     face.PersonName = pers.Name;
                     face.PersonId = pers.PersonId;
                     face.PersonSourcePath = pers.UserData;
@@ -1034,7 +1035,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             SelectedFile = renderingImage;
             await Task.Delay(200);
 
-            File.Delete(newFile); // delete compare file
+            //File.Delete(newFile); // delete compare file
 
             ShowLock = false;
         }
@@ -1187,6 +1188,13 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         private async void btnRecheck_Click(object sender, RoutedEventArgs e)
         {
             await RetestImage();
+        }
+
+        private void btnOthers_Click(object sender, RoutedEventArgs e)
+        {
+            var ctrl = sender as Button;
+            var f = ctrl.DataContext as Models.Face;
+            f.IsShowingOthers = true;
         }
     }
 }

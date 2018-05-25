@@ -165,6 +165,49 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Models
 
         private bool _addToGroup;
 
+        private IdentifyResult _identifyResult;
+
+        public IdentifyResult Identifications
+        {
+            get { return _identifyResult; }
+            set
+            {
+                _identifyResult = value;
+                OnPropertyChanged<IdentifyResult>();
+                PropertyChanged(this, new PropertyChangedEventArgs("Identifications"));
+                PropertyChanged(this, new PropertyChangedEventArgs("IdentificationsButtonString"));
+            }
+        }
+
+        public string IdentificationsButtonString
+        {
+            get
+            {
+                if (Identifications != null && Identifications.Candidates != null)
+                {
+                    return $"+{Identifications.Candidates.Length - 1}";
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        private bool _isShowingOthers;
+
+        public bool IsShowingOthers
+        {
+            get { return _isShowingOthers; }
+            set
+            {
+                _isShowingOthers = value;
+                OnPropertyChanged<bool>();
+            }
+        }
+
+
+
         #endregion Fields
 
         #region Events
