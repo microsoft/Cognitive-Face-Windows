@@ -33,6 +33,7 @@
 
 namespace Photo_Detect_Catalogue_Search_WPF_App.Helpers
 {
+    using Microsoft.ProjectOxford.Face;
     using Newtonsoft.Json.Serialization;
     using System;
     using System.Linq;
@@ -82,7 +83,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Helpers
         /// <param name="maxRetries">The maximum retries.</param>
         /// <param name="traceWriter">The trace writer.</param>
         /// <returns></returns>
-        public static async Task<T> OperationWithBasicRetryAsync<T>(Func<Task<T>> asyncOperation, Type[] transientExceptionTypes, int retryDelayMilliseconds = 1000, int maxRetries = 60, ITraceWriter traceWriter = null)
+        public static async Task<T> OperationWithBasicRetryAsync<T>(Func<Task<T>> asyncOperation, string[] transientExceptionCodes, int retryDelayMilliseconds = 1000, int maxRetries = 60, ITraceWriter traceWriter = null)
         {
             int retryCount = 0;
 
@@ -92,8 +93,8 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Helpers
                 {
                     return await asyncOperation();
                 }
-                catch (Exception ex)
-                    when (IsTransientError(ex, transientExceptionTypes))
+                catch (FaceAPIException ex)
+                    when (IsTransientError(ex.ErrorCode, transientExceptionCodes))
                 {
                     if (traceWriter != null)
                     {
@@ -119,7 +120,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Helpers
         /// <param name="maxRetries">The maximum retries.</param>
         /// <param name="traceWriter">The trace writer.</param>
         /// <returns></returns>
-        public static async Task VoidOperationWithBasicRetryAsync(Func<Task> asyncOperation, Type[] transientExceptionTypes, int retryDelayMilliseconds = 1000, int maxRetries = 60, ITraceWriter traceWriter = null)
+        public static async Task VoidOperationWithBasicRetryAsync(Func<Task> asyncOperation, string[] transientExceptionCodes, int retryDelayMilliseconds = 1000, int maxRetries = 60, ITraceWriter traceWriter = null)
         {
             int retryCount = 0;
 
@@ -130,8 +131,8 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Helpers
                     await asyncOperation();
                     return;
                 }
-                catch (Exception ex)
-                    when (IsTransientError(ex, transientExceptionTypes))
+                catch (FaceAPIException ex)
+                    when (IsTransientError(ex.ErrorCode, transientExceptionCodes))
                 {
                     if (traceWriter != null)
                     {
@@ -152,13 +153,13 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Helpers
         /// Determines whether [is transient error] [the specified ex].
         /// </summary>
         /// <param name="ex">The ex.</param>
-        /// <param name="transientExceptionTypes">The transient exception types.</param>
+        /// <param name="transientExceptionCodes">The transient exception types.</param>
         /// <returns>
         ///   <c>true</c> if [is transient error] [the specified ex]; otherwise, <c>false</c>.
         /// </returns>
-        private static bool IsTransientError(Exception ex, Type[] transientExceptionTypes)
+        private static bool IsTransientError(string code, string[] transientExceptionCodes)
         {
-            return transientExceptionTypes.Contains(ex.GetType());
+            return transientExceptionCodes.Contains(code);
         }
     }
 }

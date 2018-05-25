@@ -139,6 +139,27 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         private MainWindowLogTraceWriter _mainWindowLogTraceWriter;
 
         /// <summary>
+        /// The modal lock
+        /// </summary>
+        private bool _showLock;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [show lock].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [show lock]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ShowLock
+        {
+            get { return _showLock; }
+            set
+            {
+                _showLock = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("ShowLock"));
+            }
+        }
+        
+        /// <summary>
         /// Gets or sets the select rectangle.
         /// </summary>
         /// <value>
@@ -313,12 +334,14 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void ScanFolderControl_Loaded(object sender, RoutedEventArgs e)
+        private async void ScanFolderControl_Loaded(object sender, RoutedEventArgs e)
         {
             string subscriptionKey = _mainWindow._scenariosControl.SubscriptionKey;
             string endpoint = _mainWindow._scenariosControl.SubscriptionEndpoint;
 
             _faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
+
+            await CheckGroupIsTrained();
         }
 
         /// <summary>
@@ -395,7 +418,12 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                 }
 
                 SelecetedFolder = dialog.SelectedPath;
-                Files = new Queue<string>(Directory.GetFiles(_selectedFolder));
+                Files = new Queue<string>(Directory.GetFiles(_selectedFolder)
+                    .Where(s => s.EndsWith(".bmp", StringComparison.CurrentCultureIgnoreCase) 
+                    || s.EndsWith(".jpg", StringComparison.CurrentCultureIgnoreCase) 
+                    || s.EndsWith(".png", StringComparison.CurrentCultureIgnoreCase) 
+                    || s.EndsWith(".gif", StringComparison.CurrentCultureIgnoreCase) 
+                    || s.EndsWith(".jpeg", StringComparison.CurrentCultureIgnoreCase)));
                 FilesCount = Files.Count;
             }
         }
@@ -405,16 +433,53 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void BtnScan_Click(object sender, RoutedEventArgs e)
+        private async void BtnScan_Click(object sender, RoutedEventArgs e)
         {
-            GetNextFile();
+            await GetNextFile();
+        }
+
+        /// <summary>
+        /// Checks the group is trained, else trains it.
+        /// </summary>
+        /// <returns></returns>
+        private async Task CheckGroupIsTrained()
+        {
+            // Start train large person group
+            MainWindow.Log("Request: Training group \"{0}\"", _scanGroup.Group.LargePersonGroupId);
+            await RetryHelper.VoidOperationWithBasicRetryAsync(() =>
+                _faceServiceClient.TrainLargePersonGroupAsync(_scanGroup.Group.LargePersonGroupId),
+                new[] { "RateLimitExceeded" },
+                traceWriter: _mainWindowLogTraceWriter);
+
+            // Wait until train completed
+            while (true)
+            {
+                await Task.Delay(1000);
+
+                try // Temporary
+                {
+                    var status = await _faceServiceClient.GetLargePersonGroupTrainingStatusAsync(_scanGroup.Group.LargePersonGroupId);
+                    MainWindow.Log("Response: {0}. Group \"{1}\" training process is {2}", "Success", _scanGroup.Group.LargePersonGroupId, status.Status);
+                    if (status.Status != Microsoft.ProjectOxford.Face.Contract.Status.Running)
+                    {
+                        break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.Log($"Error: {ex.Message}");
+                    // retry
+                }
+            }
         }
 
         /// <summary>
         /// Gets the next file.
         /// </summary>
-        private void GetNextFile()
+        private async Task GetNextFile()
         {
+            ShowLock = true;
+
             DetectedFaces.Clear();
             btnNext.IsEnabled = false;
 
@@ -424,18 +489,23 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                 var dbFile = db.GetFile(file);
                 if (dbFile == null)
                 {
-                    ProcessFile(file);
+                    await ProcessFile(file);
                     break;
                 }
             }
-            MainWindow.Log("No more files in this folder to process");
+
+            ShowLock = false;
+            if (Files.Count > 0)
+            {
+                MainWindow.Log("No more files in this folder to process");
+            }
         }
 
         /// <summary>
         /// Processes the file.
         /// </summary>
         /// <param name="filePath">The file path.</param>
-        private async void ProcessFile(string filePath)
+        private async Task ProcessFile(string filePath)
         {
             _selectedFilePath = filePath;
             
@@ -443,9 +513,14 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             {
                 try
                 {
+                    // Show the image to be analysed
+                    var renderingImage = UIHelper.LoadImageAppliedOrientation(filePath);
+                    var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+                    SelectedFile = renderingImage;
+
                     var faces = await RetryHelper.OperationWithBasicRetryAsync(async () => await
                         _faceServiceClient.DetectAsync(fStream, false, true, new FaceAttributeType[] { FaceAttributeType.Gender, FaceAttributeType.Age, FaceAttributeType.Smile, FaceAttributeType.Glasses, FaceAttributeType.HeadPose, FaceAttributeType.FacialHair, FaceAttributeType.Emotion, FaceAttributeType.Hair, FaceAttributeType.Makeup, FaceAttributeType.Occlusion, FaceAttributeType.Accessories, FaceAttributeType.Noise, FaceAttributeType.Exposure, FaceAttributeType.Blur }),
-                        new[] { typeof(FaceAPIException) },
+                        new[] { "RateLimitExceeded" },
                         traceWriter: _mainWindowLogTraceWriter);
                     
                     MainWindow.Log("Response: Success. Detected {0} face(s) in {1}", faces.Length, filePath);
@@ -455,10 +530,6 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                         btnNext.IsEnabled = true;
                         return;
                     }
-
-                    var renderingImage = UIHelper.LoadImageAppliedOrientation(filePath);
-                    var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
-                    SelectedFile = renderingImage;
 
                     foreach (var face in faces)
                     {
@@ -495,34 +566,6 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                         ResultCollection.Add(face);
                     }
 
-                    // Start train large person group
-                    MainWindow.Log("Request: Training group \"{0}\"", _scanGroup.Group.LargePersonGroupId);
-                    await RetryHelper.VoidOperationWithBasicRetryAsync(() =>
-                        _faceServiceClient.TrainLargePersonGroupAsync(_scanGroup.Group.LargePersonGroupId),
-                        new[] { typeof(FaceAPIException) },
-                        traceWriter: _mainWindowLogTraceWriter);
-                    
-                    // Wait until train completed
-                    while (true)
-                    {
-                        await Task.Delay(1000);
-
-                        try // Temporary
-                        {
-                            var status = await _faceServiceClient.GetLargePersonGroupTrainingStatusAsync(_scanGroup.Group.LargePersonGroupId);
-                            MainWindow.Log("Response: {0}. Group \"{1}\" training process is {2}", "Success", _scanGroup.Group.LargePersonGroupId, status.Status);
-                            if (status.Status != Microsoft.ProjectOxford.Face.Contract.Status.Running)
-                            {
-                                break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MainWindow.Log($"Error: {ex.Message}");
-                            // retry
-                        }
-                    }
-
                     await GoGetMatches();
 
                 }
@@ -549,7 +592,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             //var identifyResult = await _faceServiceClient.IdentifyAsync(_detectedFaces.Select(ff => new Guid(ff.FaceId)).ToArray(), largePersonGroupId: this._scanGroup.Group.LargePersonGroupId);
             var identifyResult = await RetryHelper.OperationWithBasicRetryAsync(async () => await
                 _faceServiceClient.IdentifyAsync(_detectedFaces.Select(ff => new Guid(ff.FaceId)).ToArray(), largePersonGroupId: this._scanGroup.Group.LargePersonGroupId),
-                new[] { typeof(FaceAPIException) },
+                new[] { "RateLimitExceeded" },
                 traceWriter: _mainWindowLogTraceWriter);
 
             for (int idx = 0; idx < _detectedFaces.Count; idx++)
@@ -778,9 +821,12 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void btnSave_Click(object sender, RoutedEventArgs e)
         {
+            ShowLock = true;
+
             var file = new PictureFile { DateAdded = DateTime.Now, FilePath = _selectedFilePath, IsConfirmed = true };
             db.AddFile(file, _scanGroup.Group.LargePersonGroupId);
 
+            var newFacesForTraining = false;
             for (var ix = 0; ix < DetectedFaces.Count; ix++)
             {
                 var face = DetectedFaces[ix];
@@ -810,10 +856,17 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                     CropToSquare(filePath, newFilePath, face.Left, face.Top, face.Width, face.Height);
                     
                     await AddFaceToLargePersonGroup(_scanGroup.Group.LargePersonGroupId, newFilePath, face.PersonId);
+
+                    newFacesForTraining = true;
                 }
             }
 
-            GetNextFile();
+            if (newFacesForTraining)
+            {
+                await CheckGroupIsTrained();
+            }
+
+            await GetNextFile();
         }
 
         /// <summary>
@@ -914,9 +967,9 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void btnNext_Click(object sender, RoutedEventArgs e)
+        private async void btnNext_Click(object sender, RoutedEventArgs e)
         {
-            GetNextFile();
+            await GetNextFile();
         }
     }
 }

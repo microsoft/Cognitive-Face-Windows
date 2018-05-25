@@ -330,7 +330,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                     
                     p.PersonId = (await RetryHelper.OperationWithBasicRetryAsync(async () => await 
                         faceServiceClient.CreatePersonInLargePersonGroupAsync(this.GroupId, p.PersonName, dir), 
-                        new[] { typeof(FaceAPIException) },
+                        new[] { "RateLimitExceeded" },
                         traceWriter:_mainWindowLogTraceWriter
                         )).PersonId.ToString();
 
@@ -432,7 +432,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
 
                     await RetryHelper.VoidOperationWithBasicRetryAsync(() =>
                         faceServiceClient.TrainLargePersonGroupAsync(this.GroupId),
-                        new[] { typeof(FaceAPIException) },
+                        new[] { "RateLimitExceeded" },
                         traceWriter: _mainWindowLogTraceWriter);
 
                     //await faceServiceClient.TrainLargePersonGroupAsync(this.GroupId);
@@ -495,7 +495,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                     {
                         var faces = await RetryHelper.OperationWithBasicRetryAsync(async () => await
                             faceServiceClient.DetectAsync(fStream),
-                            new[] { typeof(FaceAPIException) },
+                            new[] { "RateLimitExceeded" },
                             traceWriter: _mainWindowLogTraceWriter);
 
                         //var faces = await faceServiceClient.DetectAsync(fStream);
@@ -513,7 +513,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
 
                         var identifyResult = await RetryHelper.OperationWithBasicRetryAsync(async () => await
                             faceServiceClient.IdentifyAsync(faces.Select(ff => ff.FaceId).ToArray(), largePersonGroupId: this.GroupId),
-                            new[] { typeof(FaceAPIException) },
+                            new[] { "RateLimitExceeded" },
                             traceWriter: _mainWindowLogTraceWriter);
 
                         //var identifyResult = await faceServiceClient.IdentifyAsync(faces.Select(ff => ff.FaceId).ToArray(), largePersonGroupId: this.GroupId);

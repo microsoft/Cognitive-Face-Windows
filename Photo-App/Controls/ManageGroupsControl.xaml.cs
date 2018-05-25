@@ -306,7 +306,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
 
             var groups = await RetryHelper.OperationWithBasicRetryAsync(async () => await
                 _faceServiceClient.ListLargePersonGroupsAsync(),
-                new[] { typeof(FaceAPIException) },
+                new[] { "RateLimitExceeded" },
                 traceWriter: _mainWindowLogTraceWriter);
 
             foreach (var grp in groups)
@@ -347,7 +347,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             //await faceServiceClient.CreateLargePersonGroupAsync(groupId, groupId);
             await RetryHelper.VoidOperationWithBasicRetryAsync(() =>
                 _faceServiceClient.CreateLargePersonGroupAsync(groupId, groupId),
-                new[] { typeof(FaceAPIException) },
+                new[] { "RateLimitExceeded" },
                 traceWriter: _mainWindowLogTraceWriter);
             
             await LoadGroups();
@@ -366,7 +366,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                 //await faceServiceClient.UpdateLargePersonGroupAsync(SelectedGroup.Group.LargePersonGroupId, SelectedGroup.Group.Name, SelectedGroup.Group.UserData);
                 await RetryHelper.VoidOperationWithBasicRetryAsync(() =>
                     _faceServiceClient.UpdateLargePersonGroupAsync(SelectedGroup.Group.LargePersonGroupId, SelectedGroup.Group.Name, SelectedGroup.Group.UserData),
-                    new[] { typeof(FaceAPIException) },
+                    new[] { "RateLimitExceeded" },
                     traceWriter: _mainWindowLogTraceWriter);
 
                 MainWindow.Log($"Changes to the selected group were saved successfully");
@@ -391,7 +391,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                 {
                     await RetryHelper.VoidOperationWithBasicRetryAsync(() =>
                         _faceServiceClient.DeleteLargePersonGroupAsync(SelectedGroup.Group.LargePersonGroupId),
-                        new[] { typeof(FaceAPIException) },
+                        new[] { "RateLimitExceeded" },
                         traceWriter: _mainWindowLogTraceWriter);
 
                     _db.RemovePersonsForGroup(SelectedGroup.Group.LargePersonGroupId);
