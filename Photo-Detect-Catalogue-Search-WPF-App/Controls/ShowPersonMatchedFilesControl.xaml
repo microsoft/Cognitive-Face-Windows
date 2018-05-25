@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="Photo_Detect_Catalogue_Search_WPF_App.Controls.ShowPersonMatchedFilesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:models="clr-namespace:Photo_Detect_Catalogue_Search_WPF_App.Models"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" x:Name="showPersonMatchedFilesControl">
+    <UserControl.Resources>
+        <models:NotNullVisibilityConverter x:Key="NotNullVisibilityConverter"></models:NotNullVisibilityConverter>
+        <Style x:Key="HorizontalStackPanel" TargetType="{x:Type StackPanel}">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="FrameworkElement.VerticalAlignment"  Value="Top" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="txtTitle" Text="Listing matched files for..." FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="10"/>
+        <ListView Grid.Row="1" x:Name="lstFiles" ItemsSource="{Binding MatchedFiles, ElementName=showPersonMatchedFilesControl}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel VerticalAlignment="Top" Background="AliceBlue" Margin="10">
+                        <TextBlock Text="{Binding PictureFile.FilePath}"/>
+                        <Image Source="{Binding PictureFile.FilePath}" Width="300" />
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ListView>
+        <Button Grid.Row="1" x:Name="btnOpenFileLocation" Click="btnOpenFileLocation_Click" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="20" Content="Open selected file location" />
+    </Grid>
+</UserControl>
