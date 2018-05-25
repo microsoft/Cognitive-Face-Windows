@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:Photo_Detect_Catalogue_Search_WPF_App"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <Grid x:Key="WaitingLock" Background="#AAFFFFFF">
+        <Grid x:Key="WaitingLock" Background="#FFFFFF">
             <TextBlock Text="Please wait..." FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
     </Application.Resources>

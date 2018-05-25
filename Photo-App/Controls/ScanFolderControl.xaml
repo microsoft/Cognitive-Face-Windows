@@ -54,9 +54,26 @@
                 <ColumnDefinition Width="310"/>
             </Grid.ColumnDefinitions>
 
-            <Grid VerticalAlignment="Center" HorizontalAlignment="Center" >
-                <Image x:Name="imgCurrent" Source="{Binding SelectedFile}" />
-                <Canvas Background="Transparent" x:Name="canvDrag" MouseDown="imgCurrent_MouseDown" MouseMove="imgCurrent_MouseMove" MouseLeave="imgCurrent_MouseLeave" MouseUp="imgCurrent_MouseUp" />
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True" >
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Image x:Name="imgCurrent" Source="{Binding SelectedFile}" RenderTransformOrigin="0.5,0.5">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="{Binding ImageRotateTransform}" />
+                            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"/>
+                            <TranslateTransform X="{Binding ImageTranslateX}" Y="{Binding ImageTranslateY}"/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+                <Canvas Background="Transparent" x:Name="canvDrag" MouseDown="imgCurrent_MouseDown" MouseMove="imgCurrent_MouseMove" MouseLeave="imgCurrent_MouseLeave" MouseUp="imgCurrent_MouseUp" MouseLeftButtonDown="canvDrag_MouseLeftButtonDown" MouseLeftButtonUp="canvDrag_MouseLeftButtonUp" MouseWheel="canvDrag_MouseWheel" />
+                <StackPanel Orientation="Horizontal" Grid.Row="1"  Visibility="{Binding SelectedFile, Converter={StaticResource NotNullVisibilityConverter}}">
+                    <Button x:Name="btnRotateAnti" Content="Rotate Anticlockwise" Width="130" Click="btnRotateAnti_Click"/>
+                    <Button x:Name="btnRotateClock" Content="Rotate clockwise" Width="130" Click="btnRotateClock_Click"/>
+                    <Button x:Name="btnRecheck" Content="Recheck" Width="120" Click="btnRecheck_Click" />
+                </StackPanel>
             </Grid>
 
             <Grid Grid.Column="1" VerticalAlignment="Top" Visibility="{Binding DetectedFaces.Count, Converter={StaticResource hasItemsVisibilityConverter}}">
@@ -184,7 +201,7 @@
                 </StackPanel>
             </Grid>
             <Button HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="2" x:Name="btnNext" Content="Next" Click="btnNext_Click" IsEnabled="False" />
-            <ContentControl Name="MyContentControl" Content="{StaticResource WaitingLock}" Grid.ColumnSpan="2" Visibility="{Binding ShowLock, Converter={StaticResource boolVisibilityConverter}}" />
+            <ContentControl Content="{StaticResource WaitingLock}"  Visibility="{Binding ShowLock, Converter={StaticResource boolVisibilityConverter}}" />
         </Grid>
     </Grid>
 </UserControl>

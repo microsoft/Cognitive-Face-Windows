@@ -51,6 +51,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
     /// <summary>
@@ -119,7 +120,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         private Point _selectRectangleStartPoint;
 
         /// <summary>
-        /// The database
+        /// The database provider
         /// </summary>
         private Data.SqlDataProvider db = new Data.SqlDataProvider();
 
@@ -143,6 +144,91 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// </summary>
         private bool _showLock;
 
+        /// <summary>
+        /// The image rotate transform of the image
+        /// </summary>
+        private double _imageRotateTransform = 0;
+
+        /// <summary>
+        /// The zoom of the image
+        /// </summary>
+        private double _zoom = 1;
+
+        private double _imageTranslateX;
+
+        private double _imageTranslateY;
+
+        public double ImageTranslateX
+        {
+            get { return _imageTranslateX; }
+            set
+            {
+                _imageTranslateX = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("ImageTranslateX"));
+            }
+        }
+
+        public double ImageTranslateY
+        {
+            get { return _imageTranslateY; }
+            set
+            {
+                _imageTranslateY = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("ImageTranslateY"));
+            }
+        }
+
+
+        /// <summary>
+        /// Gets or sets the zoom of the image.
+        /// </summary>
+        /// <value>
+        /// The zoom of the image.
+        /// </value>
+        public double Zoom
+        {
+            get { return _zoom; }
+            set
+            {
+                _zoom = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("Zoom"));
+            }
+        }
+        
+        /// <summary>
+        /// The left mouse is button pressed
+        /// </summary>
+        private bool _isLeftMouseButtonPressed;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is left mouse button pressed.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is left mouse button pressed; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsLeftMouseButtonPressed
+        {
+            get { return _isLeftMouseButtonPressed; }
+            set { _isLeftMouseButtonPressed = value; }
+        }
+
+
+        /// <summary>
+        /// Gets or sets the image rotate transform.
+        /// </summary>
+        /// <value>
+        /// The image rotate transform.
+        /// </value>
+        public double ImageRotateTransform
+        {
+            get { return _imageRotateTransform; }
+            set
+            {
+                _imageRotateTransform = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("ImageRotateTransform"));
+            }
+        }
+        
         /// <summary>
         /// Gets or sets a value indicating whether [show lock].
         /// </summary>
@@ -315,34 +401,6 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ScanFolderControl"/> class.
-        /// </summary>
-        /// <param name="group">The group.</param>
-        /// <param name="mainWindow">The main window.</param>
-        public ScanFolderControl(LargePersonGroupExtended group, MainWindow mainWindow)
-        {
-            _scanGroup = group;
-            _mainWindow = mainWindow;
-            _mainWindowLogTraceWriter = new MainWindowLogTraceWriter();
-            InitializeComponent();
-            Loaded += ScanFolderControl_Loaded;
-        }
-
-        /// <summary>
-        /// Handles the Loaded event of the ScanFolderControl control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private async void ScanFolderControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            string subscriptionKey = _mainWindow._scenariosControl.SubscriptionKey;
-            string endpoint = _mainWindow._scenariosControl.SubscriptionEndpoint;
-
-            _faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
-
-            await CheckGroupIsTrained();
-        }
 
         /// <summary>
         /// Gets or sets the selected file.
@@ -393,6 +451,35 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             {
                 return 300;
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScanFolderControl"/> class.
+        /// </summary>
+        /// <param name="group">The group.</param>
+        /// <param name="mainWindow">The main window.</param>
+        public ScanFolderControl(LargePersonGroupExtended group, MainWindow mainWindow)
+        {
+            _scanGroup = group;
+            _mainWindow = mainWindow;
+            _mainWindowLogTraceWriter = new MainWindowLogTraceWriter();
+            InitializeComponent();
+            Loaded += ScanFolderControl_Loaded;
+        }
+
+        /// <summary>
+        /// Handles the Loaded event of the ScanFolderControl control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private async void ScanFolderControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            string subscriptionKey = _mainWindow._scenariosControl.SubscriptionKey;
+            string endpoint = _mainWindow._scenariosControl.SubscriptionEndpoint;
+
+            _faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
+
+            await CheckGroupIsTrained();
         }
 
         /// <summary>
@@ -489,6 +576,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                 var dbFile = db.GetFile(file);
                 if (dbFile == null)
                 {
+                    _selectedFilePath = file;
                     await ProcessFile(file);
                     break;
                 }
@@ -506,9 +594,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// </summary>
         /// <param name="filePath">The file path.</param>
         private async Task ProcessFile(string filePath)
-        {
-            _selectedFilePath = filePath;
-            
+        {            
             using (var fStream = File.OpenRead(filePath))
             {
                 try
@@ -567,7 +653,6 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                     }
 
                     await GoGetMatches();
-
                 }
                 catch (FaceAPIException ex)
                 {
@@ -730,88 +815,22 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         }
 
         /// <summary>
-        /// Handles the MouseDown event of the imgCurrent control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
-        private void imgCurrent_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            canvDrag.Children.Clear();
-            _isDragging = true;
-
-            _selectRectangleStartPoint = e.GetPosition((IInputElement)sender);
-            SelectRectangle = new Rectangle() { IsHitTestVisible = false, Width = 1, Height = 1, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1 };
-            SelectRectangle.SetValue(Canvas.LeftProperty, _selectRectangleStartPoint.X);
-            SelectRectangle.SetValue(Canvas.TopProperty, _selectRectangleStartPoint.Y);
-
-            canvDrag.Children.Add(SelectRectangle);
-        }
-
-        /// <summary>
-        /// Handles the MouseMove event of the imgCurrent control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void imgCurrent_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_isDragging)
-            {
-                var point = e.GetPosition((IInputElement)sender);
-                var width = point.X - _selectRectangleStartPoint.X;
-                var height = point.Y - _selectRectangleStartPoint.Y;
-
-                if (width == 0 || height == 0)
-                {
-                    return;
-                }
-
-                if (width > 0)
-                {
-                    SelectRectangle.Width = width;
-                }
-                else
-                {
-                    _selectRectangleStartPoint.X += width;
-                    SelectRectangle.SetValue(Canvas.LeftProperty, _selectRectangleStartPoint.X);
-                    SelectRectangle.Width -= width;
-                }
-
-                if (height > 0)
-                {
-                    SelectRectangle.Height = height;
-                }
-                else
-                {
-                    _selectRectangleStartPoint.Y += height;
-                    SelectRectangle.SetValue(Canvas.TopProperty, _selectRectangleStartPoint.Y);
-                    SelectRectangle.Height -= height;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Handles the MouseLeave event of the imgCurrent control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void imgCurrent_MouseLeave(object sender, MouseEventArgs e)
-        {
-            _isDragging = false;
-            canvDrag.Children.Clear();
-        }
-
-        /// <summary>
         /// Handles the MouseUp event of the imgCurrent control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         private void imgCurrent_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var scale = ((1 / imgCurrent.Source.Width) * imgCurrent.ActualWidth);
-            var face = new Models.Face { Height = (int)(SelectRectangle.Height / scale), Width = (int)(SelectRectangle.Width / scale), Left = (int)(_selectRectangleStartPoint.X / scale), Top = (int)(_selectRectangleStartPoint.Y / scale), ImageFile = SelectedFile };
-            DetectedFaces.Add(face);
+            if (_isDragging)
+            {
+                var scale = ((1 / imgCurrent.Source.Width) * imgCurrent.ActualWidth);
+                var face = new Models.Face { Height = (int)(SelectRectangle.Height / scale), Width = (int)(SelectRectangle.Width / scale), Left = (int)(_selectRectangleStartPoint.X / scale), Top = (int)(_selectRectangleStartPoint.Y / scale), ImageFile = SelectedFile };
+                DetectedFaces.Add(face);
+                canvDrag.Children.Clear();
+            }
+
+            IsLeftMouseButtonPressed = false;
             _isDragging = false;
-            canvDrag.Children.Clear();
         }
 
         /// <summary>
@@ -970,6 +989,204 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         private async void btnNext_Click(object sender, RoutedEventArgs e)
         {
             await GetNextFile();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the btnRotateAnti control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private async void btnRotateAnti_Click(object sender, RoutedEventArgs e)
+        {
+            ImageRotateTransform -= 22.5; // new RotateTransform { Angle = ImageRotateTransform.Angle - 22.5 };
+        }
+
+        /// <summary>
+        /// Handles the Click event of the btnRotateClock control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private async void btnRotateClock_Click(object sender, RoutedEventArgs e)
+        {
+            ImageRotateTransform += 22.5; // new RotateTransform { Angle = ImageRotateTransform.Angle - 22.5 };
+        }
+
+        /// <summary>
+        /// Retests the image.
+        /// </summary>
+        /// <returns></returns>
+        private async Task RetestImage()
+        {
+            ShowLock = true;
+
+            var fileName = System.IO.Path.GetFileName(_selectedFilePath);
+            var folder = System.IO.Path.GetDirectoryName(_selectedFilePath);
+            var newFile = System.IO.Path.Combine(folder, Guid.NewGuid().ToString() + fileName);
+            SaveToBmp(imgCurrent, newFile);
+            await Task.Delay(200);
+
+            await ProcessFile(newFile);
+            await Task.Delay(200);
+
+            // load original again for user to see.
+            var renderingImage = UIHelper.LoadImageAppliedOrientation(_selectedFilePath);
+            var imageInfo = UIHelper.GetImageInfoForRendering(renderingImage);
+            SelectedFile = renderingImage;
+            await Task.Delay(200);
+
+            File.Delete(newFile); // delete compare file
+
+            ShowLock = false;
+        }
+
+        /// <summary>
+        /// Saves to BMP.
+        /// </summary>
+        /// <param name="visual">The visual.</param>
+        /// <param name="fileName">Name of the file.</param>
+        void SaveToBmp(FrameworkElement visual, string fileName)
+        {
+            var encoder = new BmpBitmapEncoder();
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)visual.ActualWidth, (int)visual.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(visual);
+            BitmapFrame frame = BitmapFrame.Create(bitmap);
+            encoder.Frames.Add(frame);
+
+            using (var stream = File.Create(fileName))
+            {
+                encoder.Save(stream);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the MouseDown event of the imgCurrent control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
+        private void imgCurrent_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.RightButton == MouseButtonState.Pressed)
+            {
+                IsLeftMouseButtonPressed = true;
+                _selectRectangleStartPoint = e.GetPosition((IInputElement)sender);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Handles the MouseMove event of the imgCurrent control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void imgCurrent_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_isDragging)
+            {
+                var point = e.GetPosition((IInputElement)sender);
+                var width = point.X - _selectRectangleStartPoint.X;
+                var height = point.Y - _selectRectangleStartPoint.Y;
+
+                if (width == 0 || height == 0)
+                {
+                    return;
+                }
+
+                if (width > 0)
+                {
+                    SelectRectangle.Width = width;
+                }
+                else
+                {
+                    _selectRectangleStartPoint.X += width;
+                    SelectRectangle.SetValue(Canvas.LeftProperty, _selectRectangleStartPoint.X);
+                    SelectRectangle.Width -= width;
+                }
+
+                if (height > 0)
+                {
+                    SelectRectangle.Height = height;
+                }
+                else
+                {
+                    _selectRectangleStartPoint.Y += height;
+                    SelectRectangle.SetValue(Canvas.TopProperty, _selectRectangleStartPoint.Y);
+                    SelectRectangle.Height -= height;
+                }
+                return;
+            }
+
+            if (_isLeftMouseButtonPressed)
+            {
+                var point = e.GetPosition((IInputElement)sender);
+                var xDelta = point.X - _selectRectangleStartPoint.X;
+                var yDelta = point.Y - _selectRectangleStartPoint.Y;
+                ImageTranslateX += xDelta;
+                ImageTranslateY += yDelta;
+                _selectRectangleStartPoint = new Point(point.X, point.Y);
+            }
+        }
+
+        /// <summary>
+        /// Handles the MouseLeave event of the imgCurrent control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void imgCurrent_MouseLeave(object sender, MouseEventArgs e)
+        {
+            _isDragging = false;
+            IsLeftMouseButtonPressed = false;
+            canvDrag.Children.Clear();
+        }
+
+        /// <summary>
+        /// Handles the MouseLeftButtonDown event of the canvDrag control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
+        private void canvDrag_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+            canvDrag.Children.Clear();
+            _isDragging = true;
+
+            _selectRectangleStartPoint = e.GetPosition((IInputElement)sender);
+            SelectRectangle = new Rectangle() { IsHitTestVisible = false, Width = 1, Height = 1, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1 };
+            SelectRectangle.SetValue(Canvas.LeftProperty, _selectRectangleStartPoint.X);
+            SelectRectangle.SetValue(Canvas.TopProperty, _selectRectangleStartPoint.Y);
+
+            canvDrag.Children.Add(SelectRectangle);
+        }
+
+        /// <summary>
+        /// Handles the MouseWheel event of the canvDrag control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseWheelEventArgs"/> instance containing the event data.</param>
+        private void canvDrag_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var delta = e.Delta;
+            Zoom *= delta > 0 ? 1.1 : 0.9;
+        }
+
+        /// <summary>
+        /// Handles the MouseLeftButtonUp event of the canvDrag control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
+        private void canvDrag_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            IsLeftMouseButtonPressed = false;
+        }
+
+        /// <summary>
+        /// Handles the Click event of the btnRecheck control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private async void btnRecheck_Click(object sender, RoutedEventArgs e)
+        {
+            await RetestImage();
         }
     }
 }
