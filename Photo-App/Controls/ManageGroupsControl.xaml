@@ -6,9 +6,11 @@
              xmlns:models="clr-namespace:Photo_Detect_Catalogue_Search_WPF_App.Models"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" x:Name="ManageGroupsPane">
-    <Grid>
+    <Grid x:Name="grdMain">
         <Grid.Resources>
             <models:NotNullVisibilityConverter x:Key="NotNullVisibilityConverter" />
+            <models:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
+            <models:BoolVisibilityConverter x:Key="BoolVisibilityConverter" />
             <Style TargetType="Button" >
                 <Setter Property="Padding" Value="6,3" />
                 <Setter Property="Margin" Value="5" />
@@ -42,13 +44,17 @@
             <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
         <StackPanel>
-            <TextBlock TextWrapping="Wrap" Margin="5" Text="This API account has the following groups." />
-            <TextBlock TextWrapping="Wrap" Margin="5" Text="Add or select a group to manage, or for scanning your local folders." />
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="btnImportGroup" Click="btnImportGroup_Click" Content="Import a new group" HorizontalAlignment="Left" />
-                <Button IsEnabled="False" x:Name="btnAddGroup" Click="btnAddGroup_Click" Content="Add manually (unfinished)" HorizontalAlignment="Left" />
             </StackPanel>
-            <ListBox HorizontalAlignment="Left" Margin="5" x:Name="LstGroups" DisplayMemberPath="Group.Name" ItemsSource="{Binding FaceGroups, ElementName=ManageGroupsPane}" SelectedItem="{Binding SelectedGroup, Mode=TwoWay, ElementName=ManageGroupsPane}" />
+            <Grid>
+                <StackPanel Visibility="{Binding FaceGroups.Count, ElementName=ManageGroupsPane, Converter={StaticResource HasItemsVisibilityConverter}}">
+                    <TextBlock TextWrapping="Wrap" Margin="5" Text="Select a group to manage or folder scan:" FontSize="13" FontWeight="Bold" />
+                    <ListBox FontSize="13" FontWeight="Bold" HorizontalAlignment="Left" Margin="5" x:Name="LstGroups" DisplayMemberPath="Group.Name" ItemsSource="{Binding FaceGroups, ElementName=ManageGroupsPane}" SelectedItem="{Binding SelectedGroup, Mode=TwoWay, ElementName=ManageGroupsPane}" />
+                </StackPanel>
+                <ContentControl Content="{StaticResource WaitingLock}"  Visibility="{Binding ShowLock, ElementName=ManageGroupsPane, Converter={StaticResource BoolVisibilityConverter}}" />
+            </Grid>
+            <TextBlock Visibility="{Binding HasNoGroups, ElementName=ManageGroupsPane, Converter={StaticResource BoolVisibilityConverter}}" TextWrapping="Wrap" Margin="5" Foreground="Red" FontWeight="Bold" Text="No groups found on the server. Use the import function." />
         </StackPanel>
         <Grid Grid.Column="1" VerticalAlignment="Top" Visibility="{Binding ElementName=LstGroups, Path=SelectedItem, Converter={StaticResource NotNullVisibilityConverter}}" Margin="10">
             <Grid.RowDefinitions>
@@ -76,13 +82,17 @@
                 <Button HorizontalAlignment="Right" Content="Delete" x:Name="btnDeleteGroup" Click="btnDeleteGroup_Click" />
             </Grid>
             <Grid Grid.Row="4" Grid.ColumnSpan="2" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBlock VerticalAlignment="Bottom" Text="{Binding ElementName=LstGroups, Path=SelectedItem.GroupPersons.Count, StringFormat='This group has {0} people, listed below:'}"/>
-                <Button x:Name="btnFolderScan" Content="Scan a folder for matches against this group" HorizontalAlignment="Right" Click="btnFolderScan_Click" />
-                <Border Grid.Row="1" Margin="0,5" BorderBrush="Black" BorderThickness="1">
+                <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Bottom" Text="{Binding ElementName=LstGroups, Path=SelectedItem.GroupPersons.Count, StringFormat='This group has {0} people, listed below:'}"/>
+                <Button Grid.ColumnSpan="2" x:Name="btnFolderScan" Content="Scan a folder for matches against this group" HorizontalAlignment="Right" Click="btnFolderScan_Click" />
+                <Border Grid.ColumnSpan="2" Grid.Row="1" Margin="0,5" BorderBrush="Black" BorderThickness="1">
                     <ScrollViewer BorderBrush="Black" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="4" Grid.ColumnSpan="2">
                         <ItemsControl x:Name="lstPeople" Grid.Row="4" Grid.ColumnSpan="2" ItemsSource="{Binding ElementName=LstGroups, Path=SelectedItem.GroupPersons}" >
                             <ItemsControl.ItemsPanel>
@@ -119,7 +129,7 @@
                 </Border>
             </Grid>
             <Button x:Name="btnShowMore" Content="Load five more images for selected person" Grid.Row="5" Click="btnShowMore_Click" />
-            <Button x:Name="btnShowFiles" Content="Show matching files for selected person" Grid.Row="6" Click="btnShowFiles_Click" />
+            <Button Grid.Column="1" x:Name="btnShowFiles" Content="Show matching files for selected person" Grid.Row="5" Click="btnShowFiles_Click" />
         </Grid>
     </Grid>
 </UserControl>

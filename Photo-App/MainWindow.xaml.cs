@@ -48,6 +48,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App
     using System.Runtime.CompilerServices;
     using System.Windows;
     using Photo_Detect_Catalogue_Search_WPF_App.Controls;
+    using Photo_Detect_Catalogue_Search_WPF_App.Helpers;
     using SampleUserControlLibrary;
 
     /// <summary>
@@ -68,6 +69,8 @@ namespace Photo_Detect_Catalogue_Search_WPF_App
         /// </summary>
         public MainWindow()
         {
+            FileTraceWriter.LogMessage("App Started");
+
             InitializeComponent();
             ServicePointManager.DefaultConnectionLimit = 1000;
 
@@ -95,6 +98,8 @@ namespace Photo_Detect_Catalogue_Search_WPF_App
             // Set the default endpoint when main windows is initiated.
             var mainWindow = GetWindow(this) as MainWindow;
             mainWindow?._scenariosControl.SetSubscriptionPageEndpoint(DefaultEndpoint);
+
+            FileTraceWriter.LogMessage("Main Window constructed");
         }
 
         #endregion Constructors

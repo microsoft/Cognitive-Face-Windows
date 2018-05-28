@@ -33,9 +33,10 @@
 
 namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
 {
+    using DatabaseLibrary;
+    using DatabaseLibrary.Data;
     using Microsoft.ProjectOxford.Face;
     using Microsoft.ProjectOxford.Face.Contract;
-    using Photo_Detect_Catalogue_Search_WPF_App.Data;
     using Photo_Detect_Catalogue_Search_WPF_App.Helpers;
     using Photo_Detect_Catalogue_Search_WPF_App.Models;
     using System;
@@ -122,7 +123,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// <summary>
         /// The database provider
         /// </summary>
-        private Data.SqlDataProvider db = new Data.SqlDataProvider();
+        private IDataProvider _db = DataProviderManager.Current;
 
         /// <summary>
         /// The face service client
@@ -154,10 +155,27 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// </summary>
         private double _zoom = 1;
 
+        /// <summary>
+        /// The image translate x
+        /// </summary>
         private double _imageTranslateX;
 
+        /// <summary>
+        /// The image translate y
+        /// </summary>
         private double _imageTranslateY;
 
+        /// <summary>
+        /// The manage groups parent
+        /// </summary>
+        private ManageGroupsControl _manageGroupsParent;
+
+        /// <summary>
+        /// Gets or sets the image translate x.
+        /// </summary>
+        /// <value>
+        /// The image translate x.
+        /// </value>
         public double ImageTranslateX
         {
             get { return _imageTranslateX; }
@@ -168,6 +186,12 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the image translate y.
+        /// </summary>
+        /// <value>
+        /// The image translate y.
+        /// </value>
         public double ImageTranslateY
         {
             get { return _imageTranslateY; }
@@ -177,8 +201,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                 PropertyChanged(this, new PropertyChangedEventArgs("ImageTranslateY"));
             }
         }
-
-
+        
         /// <summary>
         /// Gets or sets the zoom of the image.
         /// </summary>
@@ -458,8 +481,9 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// </summary>
         /// <param name="group">The group.</param>
         /// <param name="mainWindow">The main window.</param>
-        public ScanFolderControl(LargePersonGroupExtended group, MainWindow mainWindow)
+        public ScanFolderControl(LargePersonGroupExtended group, MainWindow mainWindow, ManageGroupsControl manageGroupsParent)
         {
+            _manageGroupsParent = manageGroupsParent;
             _scanGroup = group;
             _mainWindow = mainWindow;
             _mainWindowLogTraceWriter = new MainWindowLogTraceWriter();
@@ -573,7 +597,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             while (Files.Count > 0)
             {
                 var file = Files.Dequeue();
-                var dbFile = db.GetFile(file);
+                var dbFile = _db.GetFile(file);
                 if (dbFile == null)
                 {
                     _selectedFilePath = file;
@@ -704,6 +728,8 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             {
                 outString.AppendFormat("Face {0} is identified as {1}. ", face.FaceId, face.PersonName);
             }
+
+            btnSave.IsEnabled = DetectedFaces.Count > 0; // hack
 
             MainWindow.Log("Response: Success. {0}", outString);
 
@@ -844,7 +870,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             ShowLock = true;
 
             var file = new PictureFile { DateAdded = DateTime.Now, FilePath = _selectedFilePath, IsConfirmed = true };
-            db.AddFile(file, _scanGroup.Group.LargePersonGroupId);
+            _db.AddFile(file, _scanGroup.Group.LargePersonGroupId, 2);
 
             var newFacesForTraining = false;
             for (var ix = 0; ix < DetectedFaces.Count; ix++)
@@ -859,7 +885,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                     FaceJSON = Newtonsoft.Json.JsonConvert.SerializeObject(face),
                     IsConfirmed = true
                 };
-                db.AddPerson(person);
+                _db.AddPerson(person);
 
                 if (face.AddToGroup)
                 {
@@ -1212,7 +1238,12 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                     ctrl.SelectedItem = null;
                 });
             }
+        }
 
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            ((Grid)this.Parent).Children.Remove(this); // could dispose of better! :)
+            _manageGroupsParent.GetPeopleForSelectedGroup();
         }
     }
 }

@@ -33,6 +33,8 @@
 
 namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
 {
+    using DatabaseLibrary;
+    using DatabaseLibrary.Data;
     using Microsoft.ProjectOxford.Face;
     using Microsoft.ProjectOxford.Face.Contract;
     using Photo_Detect_Catalogue_Search_WPF_App.Helpers;
@@ -71,9 +73,14 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         private MainWindow _mainWindow;
 
         /// <summary>
+        /// The modal lock
+        /// </summary>
+        private bool _showLock;
+
+        /// <summary>
         /// The database provider layer
         /// </summary>
-        private Data.SqlDataProvider _db = new Data.SqlDataProvider();
+        private IDataProvider _db = DataProviderManager.Current;
 
         /// <summary>
         /// max concurrent process number for client query.
@@ -100,9 +107,36 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// The main window log trace writer
         /// </summary>
         private MainWindowLogTraceWriter _mainWindowLogTraceWriter;
+        
 
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [show lock].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [show lock]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ShowLock
+        {
+            get
+            {
+                return _showLock;
+            }
+            set
+            {
+                _showLock = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("ShowLock"));
+            }
+        }
 
+        public bool HasNoGroups
+        {
+            get
+            {
+                return FaceGroups == null || FaceGroups.Count == 0;
+            }
+        }
+        
         /// <summary>
         /// Gets the face groups.
         /// </summary>
@@ -136,7 +170,10 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                 if (PropertyChanged != null)
                 {
                     PropertyChanged(this, new PropertyChangedEventArgs("SelectedGroup"));
-                    GetPeopleForSelectedGroup();
+                    //Task.Factory.StartNew(() => 
+                    //{
+                        GetPeopleForSelectedGroup().ConfigureAwait(false);
+                    //});
                 }
             }
         }
@@ -160,12 +197,14 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// Gets the people for selected group.
         /// </summary>
         /// <returns></returns>
-        private async Task GetPeopleForSelectedGroup()
+        public async Task GetPeopleForSelectedGroup()
         {
             if (SelectedGroup == null)
             {
                 return;
             }
+
+            ShowLock = true;
 
             MainWindow.Log("Loading group persons...");
             SelectedGroup.GroupPersons.Clear();
@@ -195,21 +234,31 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
 
             foreach (var p in peops)
             {
-                var person = new PersonExtended { Person = p };
-                person.PersonFilesDbCount = _db.GetFileCountForPersonId(p.PersonId);
-                this.Dispatcher.Invoke(() =>
+                try
                 {
-                    SelectedGroup.GroupPersons.Add(person);
-                });
+                    var person = new PersonExtended { Person = p };
+                    person.PersonFilesDbCount = _db.GetFileCountForPersonId(p.PersonId);
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        SelectedGroup.GroupPersons.Add(person);
+                    });
 
-                // Initially loading just one, to save on API calls
-                var guidList = new ConcurrentBag<Guid>(person.Person.PersistedFaceIds.Take(1)); 
-                
-                await GetFacesFromServerAsync(person, guidList);
+                    // Initially loading just one, to save on API calls
+                    var guidList = new ConcurrentBag<Guid>(person.Person.PersistedFaceIds.Take(1));
+
+                    await GetFacesFromServerAsync(person, guidList);
+                }
+                catch (Exception exc)
+                {
+                    MainWindow.Log($"Error: GetPeople: Failed to load {p.Name}");
+                }
+
             }
 
             MainWindow.Log("Finished loading group persons");
             CheckPeopleInDatabase();
+
+            ShowLock = false;
         }
 
         /// <summary>
@@ -247,11 +296,16 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                     }
                     catch (Exception ex)
                     {
+                        if (ex.InnerException != null && ex.InnerException.Message.Contains("not found"))
+                        {
+                            return;
+                        }
+
                         guidList.Add(guid);
                         this.Dispatcher.Invoke(() =>
                         {
-                            MainWindow.Log($"Rate limit exceeded, Re-queuing in 1 second");
-                            Task.Delay(1000).Wait();
+                            MainWindow.Log($"Service request limit exceeded (20/min) - Re-trying in 2 seconds");
+                            Task.Delay(2000).Wait();
                         });
                     }
                 }, new Tuple<PersonExtended, Guid>(person, guid)));
@@ -287,13 +341,20 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private async void ManageGroupsControl_Loaded(object sender, RoutedEventArgs e)
         {
-            _mainWindow = Window.GetWindow(this) as MainWindow;
-            string subscriptionKey = _mainWindow._scenariosControl.SubscriptionKey;
-            string endpoint = _mainWindow._scenariosControl.SubscriptionEndpoint;
+            try
+            {
+                _mainWindow = Window.GetWindow(this) as MainWindow;
+                string subscriptionKey = _mainWindow._scenariosControl.SubscriptionKey;
+                string endpoint = _mainWindow._scenariosControl.SubscriptionEndpoint;
 
-            _faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
-
-            await LoadGroups();
+                _faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
+                await LoadGroups();
+            }
+            catch (Exception exc)
+            {
+                MainWindow.Log($"ManageGroupsControl_Loaded: {exc}");
+                MessageBox.Show($"Error loading Group Manager: {exc.Message}");
+            }
         }
 
         /// <summary>
@@ -314,6 +375,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                 FaceGroups.Add(new LargePersonGroupExtended { Group = grp });
             }
 
+            PropertyChanged(this, new PropertyChangedEventArgs("HasNoGroups"));
             MainWindow.Log("Found {0} groups.", groups.Length);
         }
 
@@ -330,9 +392,12 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         private void btnFolderScan_Click(object sender, RoutedEventArgs e)
         {
             var person = SelectedGroup.SelectedPerson;
-            var ctrl = new ScanFolderControl(_selectedGroup, _mainWindow);
-            var win = new PopupWindow(ctrl, $"Scan folders for matches with {_selectedGroup.Group.Name}");
-            win.Show();
+            var ctrl = new ScanFolderControl(_selectedGroup, _mainWindow, this);
+
+            grdMain.Children.Add(ctrl);
+
+            //var win = new PopupWindow(ctrl, $"Scan folders for matches with {_selectedGroup.Group.Name}");
+            //win.Show();
         }
 
         /// <summary>
@@ -415,14 +480,29 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         private void btnShowFiles_Click(object sender, RoutedEventArgs e)
         {
             var person = SelectedGroup.SelectedPerson;
+            if (person == null)
+            {
+                MessageBox.Show("You must first select a person from the group");
+                return; // To do. Should be CanExecute
+            }
+
             var ctrl = new ShowPersonMatchedFilesControl(person);
-            var win = new PopupWindow(ctrl, $"Matched files for {person.Person.Name}");
-            win.Show();
+
+            grdMain.Children.Add(ctrl);
+
+            //var win = new PopupWindow(ctrl, $"Matched files for {person.Person.Name}");
+            //win.Show();
         }
 
         private async void btnShowMore_Click(object sender, RoutedEventArgs e)
         {
             var person = SelectedGroup.SelectedPerson;
+            if (person == null)
+            {
+                MessageBox.Show("You must first select a person from the group");
+                return; // To do. Should be CanExecute
+            }
+
             var alreadyTaken = person.Faces.Count;
             var maxAvailable = person.Person.PersistedFaceIds.Count();
             if (alreadyTaken < maxAvailable)

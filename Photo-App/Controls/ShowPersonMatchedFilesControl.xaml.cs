@@ -33,7 +33,8 @@
 
 namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
 {
-    using Photo_Detect_Catalogue_Search_WPF_App.Data;
+    using DatabaseLibrary;
+    using DatabaseLibrary.Data;
     using Photo_Detect_Catalogue_Search_WPF_App.Models;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
@@ -53,7 +54,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// <summary>
         /// The database
         /// </summary>
-        private SqlDataProvider db = new SqlDataProvider();
+        private IDataProvider _db = DataProviderManager.Current;
 
         /// <summary>
         /// The matched files
@@ -103,7 +104,7 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void ShowPersonMatchedFilesControl_Loaded(object sender, RoutedEventArgs e)
         {
-            var people = db.GetFilesForPersonId(_person.Person.PersonId);
+            var people = _db.GetFilesForPersonId(_person.Person.PersonId);
             foreach(var person in people)
             {
                 // add value
@@ -125,6 +126,11 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
             runExplorer.FileName = "explorer.exe";
             runExplorer.Arguments = "/select,\"" + person.PictureFile.FilePath + "\"";
             System.Diagnostics.Process.Start(runExplorer);
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            ((Grid)this.Parent).Children.Remove(this); // could dispose of better! :)
         }
     }
 }
