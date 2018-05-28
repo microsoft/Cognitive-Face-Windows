@@ -9,8 +9,6 @@ namespace DatabaseLibrary
 {
     public enum DataSourceType
     {
-        [Description("Please select...")]
-        Unselected = 0,
         [Description("Using an SQL connection string")]
         SqlConnectionString = 1,
         [Description("Using local Isolated Storage")]

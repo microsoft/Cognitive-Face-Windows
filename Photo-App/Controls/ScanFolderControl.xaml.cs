@@ -912,7 +912,14 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                 await CheckGroupIsTrained();
             }
 
-            await GetNextFile();
+            try
+            {
+                await GetNextFile();
+            }
+            catch (Exception exc)
+            {
+                MainWindow.Log("Error getting next file: " + exc.Message);
+            }
         }
 
         /// <summary>

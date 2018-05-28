@@ -363,12 +363,14 @@ namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
                                         // if operation conflict, retry.
                                         if (ex.ErrorCode.Equals("ConcurrentOperationConflict"))
                                         {
+                                            MainWindow.Log("Concurrent operation conflict. Retrying.");
                                             imageList.Add(imgPath);
                                             return null;
                                         }
                                         // if operation cause rate limit exceed, retry.
                                         else if (ex.ErrorCode.Equals("RateLimitExceeded"))
                                         {
+                                            MainWindow.Log("Rate limit exceeded. Retrying.");
                                             imageList.Add(imgPath);
                                             return null;
                                         }

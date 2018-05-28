@@ -22,7 +22,7 @@ namespace DatabaseLibrary
         
         private DataSourceType GetDatabaseTypeFromIsolatedStorage()
         {
-            DataSourceType databaseType = DataSourceType.Unselected;
+            DataSourceType databaseType;
 
             using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null))
             {
@@ -38,7 +38,7 @@ namespace DatabaseLibrary
                 }
                 catch (FileNotFoundException)
                 {
-                    databaseType = DataSourceType.Unselected;
+                    databaseType = DataSourceType.LocalIsolatedStorage;
                 }
             }
             return databaseType;
