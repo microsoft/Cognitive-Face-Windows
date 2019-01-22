@@ -1811,15 +1811,15 @@ namespace Microsoft.ProjectOxford.Face
                 if (response.Content != null && response.Content.Headers.ContentType.MediaType.Contains(JsonContentTypeHeader))
                 {
                     var errorObjectString = await response.Content.ReadAsStringAsync();
-                    ClientError ex = JsonConvert.DeserializeObject<ClientError>(errorObjectString);
-                    if (ex.Error != null)
+                    ClientError clientEx = JsonConvert.DeserializeObject<ClientError>(errorObjectString);
+                    if (clientEx.Error != null)
                     {
-                        throw new FaceAPIException(ex.Error.ErrorCode, ex.Error.Message, response.StatusCode);
+                        throw new FaceAPIException(clientEx.Error.ErrorCode, clientEx.Error.Message, response.StatusCode);
                     }
                     else
                     {
                         ServiceError serviceEx = JsonConvert.DeserializeObject<ServiceError>(errorObjectString);
-                        if (ex != null)
+                        if (serviceEx.ErrorCode != null)
                         {
                             throw new FaceAPIException(serviceEx.ErrorCode, serviceEx.Message, response.StatusCode);
                         }
