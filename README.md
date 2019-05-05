@@ -1,4 +1,6 @@
 # Microsoft Face API: Windows Client Library & Sample
+This SDK has been deprecated and been replaced by [Microsoft.Azure.CognitiveServices.Vision.Face](https://github.com/Azure/azure-sdk-for-net/tree/master/src/SDKs/CognitiveServices/dataPlane/Vision/Face) which is a part of Azure SDK.
+
 This repo contains the Windows client library & sample for the Microsoft Face API, an offering within [Microsoft Cognitive Services](https://azure.microsoft.com/en-us/services/cognitive-services/), formerly known as Project Oxford.
 
 * [Learn about the Face API](https://azure.microsoft.com/en-us/services/cognitive-services/face/)
