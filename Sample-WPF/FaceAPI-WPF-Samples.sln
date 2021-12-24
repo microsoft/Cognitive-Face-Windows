@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FaceAPI-WPF-Samples", "FaceAPI-WPF-Samples.csproj", "{A25DFB19-C947-4A66-AEDE-FB2A960916AD}"
 EndProject
@@ -23,6 +23,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F5DF28CC-41E0-46BB-B82F-A5BC511D950C}
 	EndGlobalSection
 	GlobalSection( ) = preSolution
 	EndGlobalSection

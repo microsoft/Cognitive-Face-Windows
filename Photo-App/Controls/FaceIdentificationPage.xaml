@@ -2,7 +2,7 @@
 //
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
-// 
+//
 // Microsoft Cognitive Services (formerly Project Oxford): https://www.microsoft.com/cognitive-services
 //
 // Microsoft Cognitive Services (formerly Project Oxford) GitHub:
@@ -32,12 +32,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 
-<Page x:Class="Microsoft.ProjectOxford.Face.Controls.FaceIdentificationPage"
+<Page x:Class="Photo_Detect_Catalogue_Search_WPF_App.Controls.FaceIdentificationPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:uc="clr-namespace:Microsoft.ProjectOxford.Face.Controls"
              mc:Ignorable="d" x:Name="FaceIdentificationPane"
              d:DesignHeight="360" d:DesignWidth="710" Width="710" MinHeight="360" FontSize="14">
     <Grid>
@@ -47,13 +46,11 @@
             <ColumnDefinition Width="340" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="54" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="45" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ScrollViewer Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
-        <TextBlock  HorizontalAlignment="Left" Text="{Binding FaceIdentificationDescription}" TextWrapping="Wrap"></TextBlock>
-        </ScrollViewer>
+        <TextBlock Margin="0,10" Grid.ColumnSpan="3"  HorizontalAlignment="Left" Text="{Binding FaceIdentificationDescription}" TextWrapping="Wrap"></TextBlock>
         <ListView Grid.Column="0" Grid.Row="2" Height="300" Width="330" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Transparent" ItemsSource="{Binding Persons, ElementName=FaceIdentificationPane}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -96,7 +93,7 @@
                                         <Image Grid.Column="0" Height="64" Width="64" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0">
                                             <Image.Style>
                                                 <Style TargetType="{x:Type Image}">
-                                                    <Setter Property="Source" Value="/FaceAPI-WPF-Samples;component/Assets/default.jpg" />
+                                                    <Setter Property="Source" Value="/Photo-Detect-Catalogue-Search-WPF-App;component/Assets/default.jpg" />
                                                 </Style>
                                             </Image.Style>
                                         </Image>
@@ -198,7 +195,7 @@
                         <Setter Property="Source" Value="{Binding SelectedFile, ElementName=FaceIdentificationPane}" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding SelectedFile, ElementName=FaceIdentificationPane}" Value="{x:Null}">
-                                <Setter Property="Source" Value="/FaceAPI-WPF-Samples;component/Assets/default.jpg" />
+                                <Setter Property="Source" Value="/Photo-Detect-Catalogue-Search-WPF-App;component/Assets/default.jpg" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

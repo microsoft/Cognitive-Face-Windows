@@ -1,0 +1,222 @@
+﻿<UserControl x:Class="Photo_Detect_Catalogue_Search_WPF_App.Controls.ScanFolderControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:models="clr-namespace:Photo_Detect_Catalogue_Search_WPF_App.Models"
+             mc:Ignorable="d" Grid.ColumnSpan="2"
+             d:DesignHeight="450" d:DesignWidth="800" x:Name="scanFolderPage">
+    <UserControl.Resources>
+        <models:NotNullVisibilityConverter x:Key="NotNullVisibilityConverter" />
+        <models:HasItemsVisibilityConverter x:Key="hasItemsVisibilityConverter" />
+        <models:BoolVisibilityConverter x:Key="boolVisibilityConverter" />
+        <models:HasMoreThanBoolConverter x:Key="hasMoreThanBoolConverter" />
+    </UserControl.Resources>
+    <Border Background="#AA000000">
+        <Grid x:Name="ContentGrid" DataContext="{Binding ElementName=scanFolderPage}" Background="White" Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <TextBlock HorizontalAlignment="Center" Text="{Binding ScanGroup.Group.Name, StringFormat='Folder scan for group: {0}'}"  Margin="5" FontSize="20" />
+            <Button x:Name="btnClose" Click="btnClose_Click" Style="{StaticResource ResourceKey=CloseButton}" HorizontalAlignment="Right"/>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button Width="150" x:Name="BtnFolderSelect" Content="Select Folder" Margin="5" Padding="5" Click="BtnFolderSelect_Click" />
+                    <Button Width="150" x:Name="BtnScan" Content="Start Scanning" Margin="5" Padding="5" Grid.Row="1" IsEnabled="{Binding CanScan}" Click="BtnScan_Click" />
+                    <TextBlock VerticalAlignment="Center" Text="{Binding FilesCount, StringFormat='Files found: {0}'}" FontWeight="Bold" Margin="10,0,0,0" />
+                </StackPanel>
+
+                <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Margin="5,0,5,5" HorizontalAlignment="Left" Text="{Binding SelecetedFolder, StringFormat='Selected folder: {0}'}" FontWeight="Bold" />
+
+            </Grid>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="310"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Image x:Name="imgCurrent" Source="{Binding SelectedFile}" RenderTransformOrigin="0.5,0.5">
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <RotateTransform Angle="{Binding ImageRotateTransform}" />
+                                <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"/>
+                                <TranslateTransform X="{Binding ImageTranslateX}" Y="{Binding ImageTranslateY}"/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+                    </Image>
+                    <Canvas Background="Transparent" x:Name="canvDrag" MouseDown="imgCurrent_MouseDown" MouseMove="imgCurrent_MouseMove" MouseLeave="imgCurrent_MouseLeave" MouseUp="imgCurrent_MouseUp" MouseLeftButtonDown="canvDrag_MouseLeftButtonDown" MouseLeftButtonUp="canvDrag_MouseLeftButtonUp" MouseWheel="canvDrag_MouseWheel" />
+                    <StackPanel Orientation="Horizontal" Grid.Row="1"  Visibility="{Binding SelectedFile, Converter={StaticResource NotNullVisibilityConverter}}">
+                        <Button x:Name="btnRotateAnti" Content="Rotate Anticlockwise" Width="130" Click="btnRotateAnti_Click"/>
+                        <Button x:Name="btnRotateClock" Content="Rotate clockwise" Width="130" Click="btnRotateClock_Click"/>
+                        <Button x:Name="btnRecheck" Content="Recheck" Width="120" Click="btnRecheck_Click" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Column="1" VerticalAlignment="Top" Visibility="{Binding DetectedFaces.Count, Converter={StaticResource hasItemsVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ListView ItemsSource="{Binding DetectedFaces}" Margin="0,0,6,0" ScrollViewer.VerticalScrollBarVisibility="Auto" >
+                        <ListView.Style>
+                            <Style TargetType="ListView">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=Items.Count}" Value="0">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListView.Style>
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel MaxWidth="314" />
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderThickness="1" BorderBrush="Black" CornerRadius="2">
+
+                                    <Grid Margin="5" Width="285" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="64" />
+                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="16" />
+                                            <RowDefinition Height="16" />
+                                            <RowDefinition Height="16" />
+                                            <RowDefinition Height="16" />
+                                            <RowDefinition Height="16" />
+                                            <RowDefinition Height="16" />
+                                            <RowDefinition Height="16" />
+                                            <RowDefinition Height="16" />
+                                            <RowDefinition Height="16" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid Margin="0,6" Grid.Column="0" Grid.RowSpan="5" VerticalAlignment="Top">
+                                            <ContentControl Content="{Binding ContextBinder}"/>
+                                            <Image Width="64" Height="64">
+                                                <Image.Source>
+                                                    <CroppedBitmap Source="{Binding ImageFile}" SourceRect="{Binding UIRect}" />
+                                                </Image.Source>
+                                            </Image>
+                                        </Grid>
+                                        <TextBlock Grid.Column="2" Grid.Row="0" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Gender}" />
+                                        <TextBlock Grid.Column="2" Grid.Row="0" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Age}" />
+                                        <TextBlock Grid.Column="2" Grid.Row="1" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Hair}"/>
+                                        <TextBlock Grid.Column="2" Grid.Row="1" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding FacialHair}" />
+                                        <TextBlock Grid.Column="2" Grid.Row="2" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Makeup}"/>
+                                        <TextBlock Grid.Column="2" Grid.Row="2" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Emotion}" />
+                                        <TextBlock Grid.Column="2" Grid.Row="3" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding ForeheadOcclusion}"/>
+                                        <TextBlock Grid.Column="2" Grid.Row="3" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Blur}"/>
+                                        <TextBlock Grid.Column="2" Grid.Row="4" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding EyeOcclusion}"/>
+                                        <TextBlock Grid.Column="2" Grid.Row="4" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Exposure}"/>
+                                        <TextBlock Grid.Column="2" Grid.Row="5" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding MouthOcclusion}"/>
+                                        <TextBlock Grid.Column="2" Grid.Row="5" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Text="{Binding Noise}"/>
+                                        <TextBlock Grid.Column="2" Grid.Row="6" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding Glasses}"/>
+                                        <TextBlock Grid.Column="2" Grid.Row="7" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding HeadPose}"/>
+                                        <TextBlock Grid.Column="2" Grid.Row="8" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Accessories}"/>
+                                        <Button IsEnabled="{Binding Identifications.Candidates.Length, Converter={StaticResource hasMoreThanBoolConverter}, ConverterParameter=1}" Foreground="Black"  Grid.Column="2" Grid.Row="6" Grid.RowSpan="3" Content="{Binding Identifications.Candidates.Length}" Padding="0" Width="30" Click="btnOthers_Click" HorizontalAlignment="Right" />
+                                        <ComboBox Grid.Row="9" Grid.Column="2" ItemsSource="{Binding DataContext.ScanGroup.GroupPersons, ElementName=ContentGrid}" DisplayMemberPath="Person.Name" SelectedValue="{Binding PersonId}" SelectedValuePath="Person.PersonId" Margin="5"/>
+                                        <CheckBox IsChecked="{Binding Path=AddToGroup, Mode=TwoWay}" HorizontalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="10" Content="Add image for person analysis"/>
+                                        <Button HorizontalAlignment="Right" Grid.Row="11" Grid.Column="2" x:Name="btnRemove" Click="btnRemove_Click" Content="Remove" Margin="5" Padding="10,5"/>
+                                        <Grid Grid.ColumnSpan="100" Grid.RowSpan="100" Visibility="{Binding IsShowingOthers, Converter={StaticResource boolVisibilityConverter}}" Background="White">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Text="Select a match:"/>
+                                            <ListView Grid.Row="1" ItemsSource="{Binding Identifications.Candidates}" SelectionChanged="ListView_SelectionChanged">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" >
+                                                            <TextBlock Margin="3" FontWeight="Black" Text="{Binding Confidence}" Foreground="Black"/>
+                                                            <TextBlock FontSize="10" Margin="3" Text="{Binding PersonId}" Foreground="Black" />
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                                <Setter Property="Focusable" Value="False" />
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                            <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="true">
+                                                    <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                                </Trigger>
+                                                <MultiTrigger>
+                                                    <MultiTrigger.Conditions>
+                                                        <Condition Property="IsSelected" Value="true"/>
+                                                        <Condition Property="Selector.IsSelectionActive" Value="false"/>
+                                                    </MultiTrigger.Conditions>
+                                                    <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}"/>
+                                                </MultiTrigger>
+                                                <Trigger Property="IsEnabled" Value="false">
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListView>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                        <Button x:Name="btnSave" Content="Save" Click="btnSave_Click" IsEnabled="False" />
+                    </StackPanel>
+                </Grid>
+                <Button HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="2" x:Name="btnNext" Content="Next" Click="btnNext_Click" IsEnabled="False" />
+                <ContentControl Content="{StaticResource WaitingLock}"  Visibility="{Binding ShowLock, Converter={StaticResource boolVisibilityConverter}}" />
+            </Grid>
+        </Grid>
+
+    </Border>
+</UserControl>

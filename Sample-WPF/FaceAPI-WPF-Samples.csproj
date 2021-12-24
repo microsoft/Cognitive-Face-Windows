@@ -140,6 +140,8 @@
       <DependentUpon>FaceDetectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\UIHelper.cs" />
+    <Compile Include="Helpers\MainWindowLogTraceWriter.cs" />
+    <Compile Include="Helpers\RetryHelper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -30,46 +30,44 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+// This is rewritten from the same named page in the other sample project.
+// This page loads the datasets of images for each person into the web service.
+// You should have at least 3-5 images of each person to begin.
+// Create a parent folder for the group, which has subfolders inside,
+// for each person in the group/family. The parent folder name should be the
+// group name "Jones Family", the sub folders should be the people names, 
+// like "Jones-John" and "Jones-Jane", then the file names should be the 
+// person name with 1,2,3, etc after. See the demo data folder, exampled below:
+//
+//   ../Laker/Laker-Peter/Laker-Peter1.jpg
+//   ../Laker/Laker-Peter/Laker-Peter2.jpg
+//   ../Laker/Laker-Peter/Laker-Peter3.jpg
+//   ../Laker/Laker-Sally/Laker-Sally1.jpg
+//   ../Laker/Laker-Sally/Laker-Sally2.jpg
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using ClientContract = Microsoft.ProjectOxford.Face.Contract;
-using System.Windows.Media;
-using Microsoft.ProjectOxford.Face.Contract;
-using Microsoft.ProjectOxford.Face;
-using Newtonsoft.Json.Serialization;
-using Microsoft.ProjectOxford.Face.Helpers;
 
-namespace Microsoft.ProjectOxford.Face.Controls
+namespace Photo_Detect_Catalogue_Search_WPF_App.Controls
 {
-    //using System;
-    //using System.Collections.Concurrent;
-    //using System.Collections.Generic;
-    //using System.Collections.ObjectModel;
-    //using System.ComponentModel;
-    //using System.Diagnostics;
-    //using System.IO;
-    //using System.Linq;
-    //using System.Text;
-    //using System.Threading;
-    //using System.Threading.Tasks;
-    //using System.Windows;
-    //using System.Windows.Controls;
+    using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Controls;
+    using ClientContract = Microsoft.ProjectOxford.Face.Contract;
+    using System.Windows.Media;
+    using Microsoft.ProjectOxford.Face.Contract;
+    using Microsoft.ProjectOxford.Face;
+    using Photo_Detect_Catalogue_Search_WPF_App.Helpers;
+    using Newtonsoft.Json.Serialization;
 
-    //using ClientContract = Microsoft.ProjectOxford.Face.Contract;
-    //using System.Windows.Media;
-    
     /// <summary>
     /// Interaction logic for FaceDetection.xaml
     /// </summary>
@@ -90,7 +88,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// <summary>
         /// Faces to identify
         /// </summary>
-        private ObservableCollection<Controls.Face> _faces = new ObservableCollection<Controls.Face>();
+        private ObservableCollection<Models.Face> _faces = new ObservableCollection<Models.Face>();
 
         /// <summary>
         /// Person database
@@ -214,7 +212,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
         /// <summary>
         /// Gets faces to identify
         /// </summary>
-        public ObservableCollection<Controls.Face> TargetFaces
+        public ObservableCollection<Models.Face> TargetFaces
         {
             get
             {
@@ -239,9 +237,9 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
             MainWindow mainWindow = Window.GetWindow(this) as MainWindow;
             string subscriptionKey = mainWindow._scenariosControl.SubscriptionKey;
-            string endpoint = mainWindow._scenariosControl.SubscriptionEndpoint;
+            string endpoint= mainWindow._scenariosControl.SubscriptionEndpoint;
 
-            var faceServiceClient = new FaceServiceClient(subscriptionKey, endpoint);
+            var faceServiceClient = new FaceServiceClient(subscriptionKey,endpoint);
 
             // Test whether the group already exists
             try
@@ -295,7 +293,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                 TargetFaces.Clear();
                 SelectedFile = null;
                 IdentifyButton.IsEnabled = false;
-
+                
                 // Call create large person group REST API
                 // Create large person group API call will failed if group with the same name already exists
                 MainWindow.Log("Request: Creating group \"{0}\"", this.GroupId);
@@ -324,16 +322,16 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     Person p = new Person();
                     p.PersonName = tag;
 
-                    var faces = new ObservableCollection<Controls.Face>();
+                    var faces = new ObservableCollection<Models.Face>();
                     p.Faces = faces;
 
                     // Call create person REST API, the new create person id will be returned
                     MainWindow.Log("Request: Creating person \"{0}\"", p.PersonName);
-
-                    p.PersonId = (await RetryHelper.OperationWithBasicRetryAsync(async () => await
-                        faceServiceClient.CreatePersonInLargePersonGroupAsync(this.GroupId, p.PersonName, dir),
-                        new[] { typeof(FaceAPIException) },
-                        traceWriter: _mainWindowLogTraceWriter
+                    
+                    p.PersonId = (await RetryHelper.OperationWithBasicRetryAsync(async () => await 
+                        faceServiceClient.CreatePersonInLargePersonGroupAsync(this.GroupId, p.PersonName, dir), 
+                        new[] { "RateLimitExceeded" },
+                        traceWriter:_mainWindowLogTraceWriter
                         )).PersonId.ToString();
 
                     MainWindow.Log("Response: Success. Person \"{0}\" (PersonID:{1}) created", p.PersonName, p.PersonId);
@@ -344,7 +342,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     new ConcurrentBag<string>(
                         Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
                             .Where(s => s.ToLower().EndsWith(".jpg") || s.ToLower().EndsWith(".png") || s.ToLower().EndsWith(".bmp") || s.ToLower().EndsWith(".gif")));
-
+                    
                     while (imageList.TryTake(out img))
                     {
                         tasks.Add(Task.Factory.StartNew(
@@ -365,12 +363,14 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                         // if operation conflict, retry.
                                         if (ex.ErrorCode.Equals("ConcurrentOperationConflict"))
                                         {
+                                            MainWindow.Log("Concurrent operation conflict. Retrying.");
                                             imageList.Add(imgPath);
                                             return null;
                                         }
                                         // if operation cause rate limit exceed, retry.
                                         else if (ex.ErrorCode.Equals("RateLimitExceeded"))
                                         {
+                                            MainWindow.Log("Rate limit exceeded. Retrying.");
                                             imageList.Add(imgPath);
                                             return null;
                                         }
@@ -394,7 +394,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                                 }
 
                                 this.Dispatcher.Invoke(
-                                    new Action<ObservableCollection<Controls.Face>, string, ClientContract.AddPersistedFaceResult>(UIHelper.UpdateFace),
+                                    new Action<ObservableCollection<Models.Face>, string, ClientContract.AddPersistedFaceResult>(UIHelper.UpdateFace),
                                     faces,
                                     detectionResult.Item1,
                                     detectionResult.Item2);
@@ -434,7 +434,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                     await RetryHelper.VoidOperationWithBasicRetryAsync(() =>
                         faceServiceClient.TrainLargePersonGroupAsync(this.GroupId),
-                        new[] { typeof(FaceAPIException) },
+                        new[] { "RateLimitExceeded" },
                         traceWriter: _mainWindowLogTraceWriter);
 
                     //await faceServiceClient.TrainLargePersonGroupAsync(this.GroupId);
@@ -497,7 +497,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
                     {
                         var faces = await RetryHelper.OperationWithBasicRetryAsync(async () => await
                             faceServiceClient.DetectAsync(fStream),
-                            new[] { typeof(FaceAPIException) },
+                            new[] { "RateLimitExceeded" },
                             traceWriter: _mainWindowLogTraceWriter);
 
                         //var faces = await faceServiceClient.DetectAsync(fStream);
@@ -515,7 +515,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
 
                         var identifyResult = await RetryHelper.OperationWithBasicRetryAsync(async () => await
                             faceServiceClient.IdentifyAsync(faces.Select(ff => ff.FaceId).ToArray(), largePersonGroupId: this.GroupId),
-                            new[] { typeof(FaceAPIException) },
+                            new[] { "RateLimitExceeded" },
                             traceWriter: _mainWindowLogTraceWriter);
 
                         //var identifyResult = await faceServiceClient.IdentifyAsync(faces.Select(ff => ff.FaceId).ToArray(), largePersonGroupId: this.GroupId);
@@ -639,7 +639,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             /// <summary>
             /// Person's faces from database
             /// </summary>
-            private ObservableCollection<Controls.Face> _faces = new ObservableCollection<Controls.Face>();
+            private ObservableCollection<Models.Face> _faces = new ObservableCollection<Models.Face>();
 
             /// <summary>
             /// Person's id
@@ -667,7 +667,7 @@ namespace Microsoft.ProjectOxford.Face.Controls
             /// <summary>
             /// Gets or sets person's faces from database
             /// </summary>
-            public ObservableCollection<Controls.Face> Faces
+            public ObservableCollection<Models.Face> Faces
             {
                 get
                 {
